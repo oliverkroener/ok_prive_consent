@@ -1,0 +1,29 @@
+{
+    "name": "oliverkroener/ok-prive-cookie-consent",
+    "type": "typo3-cms-extension",
+    "description": "Provides a backend module to manage privacy cookie consent scripts for Prive Cookie Consent.",
+    "version": "2.0.0",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "Oliver Kroener",
+            "email": "ok@oliver-kroener.de",
+            "role": "developer"
+        }
+    ],
+    "require": {
+        "typo3/cms-core": "^11.5",
+        "oliverkroener/ok-typo3-helper": "^3"
+    },
+    "autoload": {
+        "psr-4": {
+            "OliverKroener\\OkPriveCookieConsent\\": "Classes/"
+        }
+    },
+    "extra": {
+        "typo3/cms": {
+            "extension-key": "ok_prive_cookie_consent"
+        }
+    }
+
+}

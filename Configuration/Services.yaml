@@ -1,0 +1,14 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  OliverKroener\OkPriveCookieConsent\:
+    resource: '../Classes/*'
+
+  # Define the DatabaseService
+  OliverKroener\OkPriveCookieConsent\Service\DatabaseService:
+    public: true
+    arguments:
+      $siteRootService: '@OliverKroener\Helpers\Service\SiteRootService'

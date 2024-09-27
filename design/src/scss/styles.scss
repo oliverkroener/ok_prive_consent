@@ -1,0 +1,43 @@
+@import "variables";
+
+// Import all of Bootstrap's CSS
+@import "bootstrap/scss/bootstrap";
+@import "bootstrap-icons/font/bootstrap-icons.min.css";
+@import "monaco-editor/min/vs/editor/editor.main.css";
+@import "@fortawesome/fontawesome-free/css/all.min.css";
+
+
+@import "buttons";
+@import "images";
+@import "monaco";
+@import "navbar";
+@import "footer";
+
+// Custom styles
+
+h1, h2, h3, h4, h5, h6 {
+    color: $primary;
+}
+
+.blog-date {
+    width: 50%;
+    height: 3rem;
+    background-color: $primary;
+    color: $white;
+    // include mixin border radius
+    @include border-radius(0.5rem);
+    z-index: 1000;
+    position: absolute;
+    top: -1rem;
+    left: 1.5rem;
+}
+
+// Remove overlay circle
+.typo3-messages i.fa-circle {
+    display: none;
+    
+}
+.hidden {
+    display: none;
+}
+
