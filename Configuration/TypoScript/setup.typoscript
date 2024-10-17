@@ -12,8 +12,7 @@ page {
     }
 
     # Insert script in <head>
-    footerData.10 = TEXT
-    footerData.10 < lib.priveScript
+    headerData.10 < lib.priveScript
 
     # Insert the footer script before </body> if not empty
     footerData.9999 = TEXT

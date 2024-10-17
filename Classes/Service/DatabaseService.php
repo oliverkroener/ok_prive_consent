@@ -107,10 +107,10 @@ class DatabaseService
         $script = $script['tx_ok_prive_cookie_consent_banner_script'] ?? '';
 
         // Check if 'type="text/javascript"' is already present
-        if (strpos($script, 'type="text/javascript"') === false) {
+        //if (strpos($script, 'type="text/javascript"') === false) {
             // Add 'type="text/javascript"' if it's missing
-            $script = str_replace('<script', '<script type="text/javascript"', $script);
-        }
+        //    $script = str_replace('<script', '<script type="text/javascript"', $script);
+        //}
 
         return $script;
     }
