@@ -32,15 +32,16 @@ class DatabaseService
         $queryBuilder = $connectionPool->getQueryBuilderForTable('sys_template');
 
         if ($frontendMode) {
-            $currentPageId = (int)$GLOBALS['TSFE']->id;
+            $currentPageId = (int) $GLOBALS['TSFE']->id;
         } else {
-            $currentPageId = (int)GeneralUtility::_GP('id');
+            $currentPageId = (int) GeneralUtility::_GP('id');
         }
 
         $siteRootPid = $this->siteRootService->findNextSiteRoot($currentPageId);
 
         // return null if no site root is found
-        if (!$siteRootPid) return null;
+        if (!$siteRootPid)
+            return null;
 
         $scripts = $queryBuilder
             ->select('tx_ok_prive_cookie_consent_banner_script')
@@ -66,7 +67,7 @@ class DatabaseService
         $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
         $queryBuilder = $connectionPool->getQueryBuilderForTable('sys_template');
 
-        $currentPageId = (int)GeneralUtility::_GP('id');
+        $currentPageId = (int) GeneralUtility::_GP('id');
         $siteRootPid = $this->siteRootService->findNextSiteRoot($currentPageId);
 
         // Fetch the first sys_template record with pid=0
@@ -84,7 +85,7 @@ class DatabaseService
             $queryBuilder
                 ->update('sys_template')
                 ->where(
-                    $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter((int)$record[0], \PDO::PARAM_INT))
+                    $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter((int) $record[0], \PDO::PARAM_INT))
                 )
                 ->set('tx_ok_prive_cookie_consent_banner_script', $bannerScript)
                 ->execute();
@@ -103,6 +104,14 @@ class DatabaseService
         // Get scripts
         $script = $this->getConsentScripts(true);
 
-            return $script['tx_ok_prive_cookie_consent_banner_script'] ?? '';
+        $script = $script['tx_ok_prive_cookie_consent_banner_script'] ?? '';
+
+        // Check if 'type="text/javascript"' is already present
+        if (strpos($script, 'type="text/javascript"') === false) {
+            // Add 'type="text/javascript"' if it's missing
+            $script = str_replace('<script', '<script type="text/javascript"', $script);
+        }
+
+        return $script;
     }
 }
