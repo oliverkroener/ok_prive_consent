@@ -11,8 +11,9 @@ page {
         cookieButton = EXT:ok_prive_cookie_consent/Resources/Public/Css/prive-cookie-button.css
     }
 
-    # Insert script in body
-    footerData.10 < lib.priveScript
+    # Insert script in head
+    includeJS.10 = TEXT
+    includeJS.10 < lib.priveScript
 
     # Insert the footer script before </body> if not empty
     footerData.9999 = TEXT
