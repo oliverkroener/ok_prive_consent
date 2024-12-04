@@ -6,13 +6,15 @@ use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use OliverKroener\OkPriveCookieConsent\Service\DatabaseService;
+use Psr\Http\Message\ResponseInterface;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 
 class ConsentController extends ActionController
 {
 
     /**
      * @var DatabaseService
-    */
+     */
     private $databaseService;
 
     public function __construct(DatabaseService $databaseService)
@@ -31,6 +33,9 @@ class ConsentController extends ActionController
         if (!empty($scripts)) {
             // Assign data to the view
             $this->view->assign('tx_ok_prive_cookie_consent_banner_script', $scripts['tx_ok_prive_cookie_consent_banner_script']);
+            $content = $this->view->render();
+
+            return $this->htmlResponse($content);
         } else {
             return $this->redirect('error');
         }
@@ -39,14 +44,18 @@ class ConsentController extends ActionController
     /**
      * Shows an error, when no site root exists
      */
-    public function errorAction()
+    public function errorAction(): ResponseInterface
     {
+        // Render the view and return the HTML response
+        $content = $this->view->render();
+
+        return $this->htmlResponse($content);
     }
 
     /**
      * Saves the consent script
      */
-    public function saveAction()
+    public function saveAction(): ResponseInterface
     {
         $bannerScript = $this->request->getArgument('tx_ok_prive_cookie_consent_banner_script') ?? '';
 
@@ -56,10 +65,10 @@ class ConsentController extends ActionController
         $this->addFlashMessage(
             LocalizationUtility::translate('flash.message.success', 'ok_prive_cookie_consent'),
             '',
-            AbstractMessage::OK
+            ContextualFeedbackSeverity::OK
         );
 
         // Redirect back to index
-        $this->redirect('index');
+        return $this->redirect('index');
     }
 }
