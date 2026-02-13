@@ -11,18 +11,15 @@ page {
         cookieButton = EXT:ok_prive_cookie_consent/Resources/Public/Css/prive-cookie-button.css
     }
  
-    # Insert the footer script before </body> using stdWrap
-    footerData {
-        cookieButtonAndBanner = COA
-        cookieButtonAndBanner {
-            10 = TEXT
-            10.value = <a href="#" class="prive-cookie-button" data-cc="c-settings">&nbsp;</a>
-            10.stdWrap.trim = 1
-            20 = USER
-            20.userFunc = OliverKroener\OkPriveCookieConsent\Service\DatabaseService->renderBannerScript
-            20.stdWrap.trim = 1
-        }
-        stdWrap.cObject = footerData.cookieButtonAndBanner
-        stdWrap.trim = 1
+    # Insert cookie button and banner script before </body>
+    # Key 234797283 derived from crc32('ok_prive_cookie_consent') to avoid collisions
+    footerData.234797283 = COA
+    footerData.234797283 {
+        10 = TEXT
+        10.value = <a href="#" class="prive-cookie-button" data-cc="c-settings">&nbsp;</a>
+
+        20 = USER
+        20.userFunc = OliverKroener\OkPriveCookieConsent\Service\DatabaseService->renderBannerScript
+        20.stdWrap.trim = 1
     }
 }   

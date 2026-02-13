@@ -3,109 +3,82 @@
 namespace OliverKroener\OkPriveCookieConsent\Service;
 
 use OliverKroener\Helpers\Service\SiteRootService;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
-
 
 class DatabaseService
 {
-    /**
-     * @var SiteRootService
-     */
-    private $siteRootService;
-
-    public function __construct(SiteRootService $siteRootService)
-    {
-        $this->siteRootService = $siteRootService;
+    public function __construct(
+        private readonly SiteRootService $siteRootService,
+        private readonly ConnectionPool $connectionPool,
+    ) {
     }
 
     /**
      * Retrieves the consent script from the first sys_template record
-     *
-     * @param bool $frontendMode
-     * @return ?array
      */
-    public function getConsentScripts($frontendMode = false): ?array
+    public function getConsentScripts(int $pageId): ?array
     {
-        /** @var \TYPO3\CMS\Core\Database\ConnectionPool $connectionPool */
-        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
-        $queryBuilder = $connectionPool->getQueryBuilderForTable('sys_template');
+        $siteRootPid = $this->siteRootService->findNextSiteRoot($pageId);
 
-        if ($frontendMode) {
-            $currentPageId = (int) $GLOBALS['TSFE']->id;
-        } else {
-            $currentPageId = (int) GeneralUtility::_GP('id');
+        if (!$siteRootPid) {
+            return null;
         }
 
-        $siteRootPid = $this->siteRootService->findNextSiteRoot($currentPageId);
-
-        // return null if no site root is found
-        if (!$siteRootPid)
-            return null;
-
-        $scripts = $queryBuilder
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('sys_template');
+        return $queryBuilder
             ->select('tx_ok_prive_cookie_consent_banner_script')
             ->from('sys_template')
             ->where(
-                $queryBuilder->expr()->eq('pid', $queryBuilder->createNamedParameter($siteRootPid, \PDO::PARAM_INT))
+                $queryBuilder->expr()->eq('pid', $queryBuilder->createNamedParameter($siteRootPid, Connection::PARAM_INT))
             )
-            ->execute()
-            ->fetchAssociative();
-
-        return $scripts;
+            ->executeQuery()
+            ->fetchAssociative() ?: null;
     }
 
     /**
      * Saves the consent script to the first sys_template record
-     *
-     * @param string $script
-     * @return void
      */
-    public function saveConsentScript(string $bannerScript): void
+    public function saveConsentScript(int $pageId, string $bannerScript): void
     {
-        /** @var \TYPO3\CMS\Core\Database\ConnectionPool $connectionPool */
-        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
-        $queryBuilder = $connectionPool->getQueryBuilderForTable('sys_template');
+        $siteRootPid = $this->siteRootService->findNextSiteRoot($pageId);
 
-        $currentPageId = (int) GeneralUtility::_GP('id');
-        $siteRootPid = $this->siteRootService->findNextSiteRoot($currentPageId);
+        if (!$siteRootPid) {
+            return;
+        }
 
-        // Fetch the first sys_template record with pid=0
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('sys_template');
         $record = $queryBuilder
             ->select('uid')
             ->from('sys_template')
             ->where(
-                $queryBuilder->expr()->eq('pid', $queryBuilder->createNamedParameter($siteRootPid, \PDO::PARAM_INT))
+                $queryBuilder->expr()->eq('pid', $queryBuilder->createNamedParameter($siteRootPid, Connection::PARAM_INT))
             )
-            ->execute()
+            ->executeQuery()
             ->fetchFirstColumn();
 
-        if ($record[0]) {
-            // Update existing record
-            $queryBuilder
+        if (!empty($record)) {
+            $updateQueryBuilder = $this->connectionPool->getQueryBuilderForTable('sys_template');
+            $updateQueryBuilder
                 ->update('sys_template')
                 ->where(
-                    $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter((int) $record[0], \PDO::PARAM_INT))
+                    $updateQueryBuilder->expr()->eq('uid', $updateQueryBuilder->createNamedParameter((int)$record[0], Connection::PARAM_INT))
                 )
                 ->set('tx_ok_prive_cookie_consent_banner_script', $bannerScript)
-                ->execute();
+                ->executeStatement();
         }
     }
 
     /**
-     * Retrieves the specified script from the active sys_template.
-     *
-     * @param string $content The current content (unused)
-     * @param array $conf Configuration array, expecting 'type' => 'head' or 'body'
-     * @return string The script content or an empty string if not set.
+     * TypoScript USER function: renders the banner script for frontend output.
      */
-    public function renderBannerScript($content, $conf): string
+    public function renderBannerScript(string $content, array $conf): string
     {
-        // Get scripts
-        $script = $this->getConsentScripts(true);
+        $request = $GLOBALS['TYPO3_REQUEST'];
+        $pageId = (int)$request->getAttribute('routing')->getPageId();
 
-        $script = $script['tx_ok_prive_cookie_consent_banner_script'] ?? '';
+        $scripts = $this->getConsentScripts($pageId);
 
-        return $script;
+        return $scripts['tx_ok_prive_cookie_consent_banner_script'] ?? '';
     }
 }

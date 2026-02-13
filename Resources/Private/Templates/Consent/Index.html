@@ -1,29 +1,47 @@
-<f:layout name="Backend" />
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
 
-<f:section name="content">
-    <div class="d-flex row overflow-y">
-        <h1 class="mt-4 col-12">
-            <f:translate key="form.header.cookie_consent_script" />
-        </h1>
-        <f:form action="save" class="mt-3">
-            <div class="form-group">
-                <label for="monaco-editor">
-                    <f:translate key="form.label.banner_script" />
-                </label>
-                <!-- Container for Monaco Editor -->
-                <div id="monaco-editor"></div>
+<f:layout name="Module" />
 
-                <f:form.textarea 
+<f:section name="Content">
+
+<f:flashMessages />
+
+<f:form action="save" id="priveConsentForm" name="priveConsentForm">
+    <div class="form-section">
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label" for="tx_ok_prive_cookie_consent_banner_script">
+                <f:translate key="form.label.banner_script" />
+            </label>
+            <div class="col-sm-10">
+                <f:form.textarea
                     id="tx_ok_prive_cookie_consent_banner_script"
-                    name="tx_ok_prive_cookie_consent_banner_script" 
-                    value="{tx_ok_prive_cookie_consent_banner_script}" 
-                    rows="10" 
-                    cols="80" 
-                    placeholder="{f:translate(key:'form.placeholder.javascript_code')}" 
-                    class="form-control" 
+                    name="tx_ok_prive_cookie_consent_banner_script"
+                    value="{tx_ok_prive_cookie_consent_banner_script}"
+                    rows="20"
+                    cols="80"
+                    placeholder="{f:translate(key:'form.placeholder.javascript_code')}"
+                    class="form-control font-monospace"
+                    style="font-size: 13px; tab-size: 4;"
                 />
+                <div class="form-text">
+                    <f:translate key="module.description" />
+                </div>
             </div>
-            <f:form.submit value="{f:translate(key:'form.button.save')}" class="btn btn-success mt-2" />
-        </f:form>
+        </div>
     </div>
+
+    <div class="mt-4">
+        <button type="submit" class="btn btn-primary">
+            <core:icon identifier="actions-document-save" size="small" />
+            <f:translate key="form.button.save" />
+        </button>
+    </div>
+</f:form>
+
 </f:section>
+
+</html>

@@ -7,7 +7,7 @@ services:
   OliverKroener\OkPriveCookieConsent\:
     resource: '../Classes/*'
 
-  # Define the DatabaseService
+  # Public: required for TypoScript USER function calls
   OliverKroener\OkPriveCookieConsent\Service\DatabaseService:
     public: true
     arguments:

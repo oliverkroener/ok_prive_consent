@@ -2,54 +2,50 @@
 
 namespace OliverKroener\OkPriveCookieConsent\Controller;
 
-use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
-use TYPO3\CMS\Core\Messaging\AbstractMessage;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use OliverKroener\OkPriveCookieConsent\Service\DatabaseService;
 use Psr\Http\Message\ResponseInterface;
+use TYPO3\CMS\Backend\Attribute\AsController;
+use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
+use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
+#[AsController]
 class ConsentController extends ActionController
 {
-
-    /**
-     * @var DatabaseService
-     */
-    private $databaseService;
-
-    public function __construct(DatabaseService $databaseService)
-    {
-        $this->databaseService = $databaseService;
+    public function __construct(
+        private readonly DatabaseService $databaseService,
+        private readonly ModuleTemplateFactory $moduleTemplateFactory,
+    ) {
     }
 
     /**
      * Displays the form to edit the consent script
      */
-    public function indexAction()
+    public function indexAction(): ResponseInterface
     {
-
-        $scripts = $this->databaseService->getConsentScripts();
+        $pageId = (int)($this->request->getParsedBody()['id'] ?? $this->request->getQueryParams()['id'] ?? 0);
+        $scripts = $this->databaseService->getConsentScripts($pageId);
 
         if (!empty($scripts)) {
-            // Assign data to the view
-            $this->view->assign('tx_ok_prive_cookie_consent_banner_script', $scripts['tx_ok_prive_cookie_consent_banner_script']);
-            $content = $this->view->render();
-
-            return $this->htmlResponse($content);
-        } else {
-            return $this->redirect('error');
+            $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+            $moduleTemplate->assign(
+                'tx_ok_prive_cookie_consent_banner_script',
+                $scripts['tx_ok_prive_cookie_consent_banner_script']
+            );
+            return $moduleTemplate->renderResponse('Consent/Index');
         }
+
+        return $this->redirect('error');
     }
 
     /**
-     * Shows an error, when no site root exists
+     * Shows an error when no site root exists
      */
     public function errorAction(): ResponseInterface
     {
-        // Render the view and return the HTML response
-        $content = $this->view->render();
-
-        return $this->htmlResponse($content);
+        $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+        return $moduleTemplate->renderResponse('Consent/Error');
     }
 
     /**
@@ -57,18 +53,17 @@ class ConsentController extends ActionController
      */
     public function saveAction(): ResponseInterface
     {
+        $pageId = (int)($this->request->getParsedBody()['id'] ?? $this->request->getQueryParams()['id'] ?? 0);
         $bannerScript = $this->request->getArgument('tx_ok_prive_cookie_consent_banner_script') ?? '';
 
-        $this->databaseService->saveConsentScript($bannerScript);
+        $this->databaseService->saveConsentScript($pageId, $bannerScript);
 
-        // Add a flash message
         $this->addFlashMessage(
             LocalizationUtility::translate('flash.message.success', 'ok_prive_cookie_consent'),
             '',
             ContextualFeedbackSeverity::OK
         );
 
-        // Redirect back to index
         return $this->redirect('index');
     }
 }

@@ -8,9 +8,9 @@ destinationDir="../Resources/Public"
 mkdir -p "$destinationDir/Css"
 mkdir -p "$destinationDir/JavaScript"
 
-# Get the CSS and JS files from the source directory
-cssFiles=( "$sourceDir"/index-*.css )
-jsFiles=( "$sourceDir"/index-*.js )
+# Get the CSS and JS files from the source directory (backend entry point)
+cssFiles=( "$sourceDir"/backend-*.css )
+jsFiles=( "$sourceDir"/backend-*.js )
 
 # Get all .woff, .woff2, and .ttf files from the source directory
 fontFiles=( "$sourceDir"/*.woff "$sourceDir"/*.woff2 "$sourceDir"/*.ttf )
@@ -18,7 +18,7 @@ fontFiles=( "$sourceDir"/*.woff "$sourceDir"/*.woff2 "$sourceDir"/*.ttf )
 # Check if at least one CSS and one JS file exist
 if [ -e "${cssFiles[0]}" ] && [ -e "${jsFiles[0]}" ]; then
 
-    # Copy all js files
+    # Copy all JS chunk files (Monaco Editor dynamic imports)
     cp "$sourceDir"/*.js "$destinationDir"/JavaScript/
 
     # Define the new file names
