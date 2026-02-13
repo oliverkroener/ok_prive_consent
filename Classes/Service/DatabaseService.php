@@ -1,6 +1,6 @@
 <?php
 
-namespace OliverKroener\OkPriveCookieConsent\Service;
+namespace OliverKroener\OkPriveConsent\Service;
 
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -28,7 +28,7 @@ class DatabaseService
 
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable('sys_template');
         return $queryBuilder
-            ->select('tx_ok_prive_cookie_consent_banner_script', 'tx_ok_prive_cookie_consent_banner_enabled')
+            ->select('tx_ok_prive_consent_banner_script', 'tx_ok_prive_consent_banner_enabled')
             ->from('sys_template')
             ->where(
                 $queryBuilder->expr()->eq('pid', $queryBuilder->createNamedParameter($siteRootPid, Connection::PARAM_INT))
@@ -65,8 +65,8 @@ class DatabaseService
                 ->where(
                     $updateQueryBuilder->expr()->eq('uid', $updateQueryBuilder->createNamedParameter((int)$record[0], Connection::PARAM_INT))
                 )
-                ->set('tx_ok_prive_cookie_consent_banner_script', $bannerScript)
-                ->set('tx_ok_prive_cookie_consent_banner_enabled', (int)$enabled, true, Connection::PARAM_INT)
+                ->set('tx_ok_prive_consent_banner_script', $bannerScript)
+                ->set('tx_ok_prive_consent_banner_enabled', (int)$enabled, true, Connection::PARAM_INT)
                 ->executeStatement();
         }
     }
@@ -81,12 +81,12 @@ class DatabaseService
 
         $scripts = $this->getConsentScripts($pageId);
 
-        if (empty($scripts['tx_ok_prive_cookie_consent_banner_enabled'])) {
+        if (empty($scripts['tx_ok_prive_consent_banner_enabled'])) {
             return '';
         }
 
-        $script = trim($scripts['tx_ok_prive_cookie_consent_banner_script'] ?? '');
+        $script = trim($scripts['tx_ok_prive_consent_banner_script'] ?? '');
 
-        return $script !== '' ? $scripts['tx_ok_prive_cookie_consent_banner_script'] : '';
+        return $script !== '' ? $scripts['tx_ok_prive_consent_banner_script'] : '';
     }
 }

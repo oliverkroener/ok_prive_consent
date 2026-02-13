@@ -1,8 +1,8 @@
 <?php
 
-namespace OliverKroener\OkPriveCookieConsent\Controller;
+namespace OliverKroener\OkPriveConsent\Controller;
 
-use OliverKroener\OkPriveCookieConsent\Service\DatabaseService;
+use OliverKroener\OkPriveConsent\Service\DatabaseService;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
@@ -36,8 +36,8 @@ class ConsentController extends ActionController
             $this->loadFormDirtyCheckAssets();
             $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
             $moduleTemplate->assignMultiple([
-                'tx_ok_prive_cookie_consent_banner_script' => $scripts['tx_ok_prive_cookie_consent_banner_script'],
-                'tx_ok_prive_cookie_consent_banner_enabled' => (bool)$scripts['tx_ok_prive_cookie_consent_banner_enabled'],
+                'tx_ok_prive_consent_banner_script' => $scripts['tx_ok_prive_consent_banner_script'],
+                'tx_ok_prive_consent_banner_enabled' => (bool)$scripts['tx_ok_prive_consent_banner_enabled'],
             ]);
 
             try {
@@ -71,13 +71,13 @@ class ConsentController extends ActionController
     public function saveAction(): ResponseInterface
     {
         $pageId = (int)($this->request->getParsedBody()['id'] ?? $this->request->getQueryParams()['id'] ?? 0);
-        $bannerScript = $this->request->getArgument('tx_ok_prive_cookie_consent_banner_script') ?? '';
-        $enabled = (bool)($this->request->getArgument('tx_ok_prive_cookie_consent_banner_enabled') ?? false);
+        $bannerScript = $this->request->getArgument('tx_ok_prive_consent_banner_script') ?? '';
+        $enabled = (bool)($this->request->getArgument('tx_ok_prive_consent_banner_enabled') ?? false);
 
         $this->databaseService->saveConsentScript($pageId, $bannerScript, $enabled);
 
         $this->addFlashMessage(
-            LocalizationUtility::translate('flash.message.success', 'ok_prive_cookie_consent'),
+            LocalizationUtility::translate('flash.message.success', 'ok_prive_consent'),
             '',
             ContextualFeedbackSeverity::OK
         );

@@ -13,10 +13,10 @@
 <f:if condition="{siteIdentifier}">
     <div class="callout callout-info">
         <div class="callout-body">
-            <strong><f:translate key="LLL:EXT:ok_prive_cookie_consent/Resources/Private/Language/locallang.xlf:label.siteIdentifier" />:</strong>
+            <strong><f:translate key="LLL:EXT:ok_prive_consent/Resources/Private/Language/locallang.xlf:label.siteIdentifier" />:</strong>
             {siteIdentifier}
             &nbsp;|&nbsp;
-            <strong><f:translate key="LLL:EXT:ok_prive_cookie_consent/Resources/Private/Language/locallang.xlf:label.siteRootPageId" />:</strong>
+            <strong><f:translate key="LLL:EXT:ok_prive_consent/Resources/Private/Language/locallang.xlf:label.siteRootPageId" />:</strong>
             {siteRootPageId}
         </div>
     </div>
@@ -31,13 +31,13 @@
             <div class="col-sm-10">
                 <div class="form-check form-switch mt-2">
                     <f:form.checkbox
-                        id="tx_ok_prive_cookie_consent_banner_enabled"
-                        name="tx_ok_prive_cookie_consent_banner_enabled"
+                        id="tx_ok_prive_consent_banner_enabled"
+                        name="tx_ok_prive_consent_banner_enabled"
                         value="1"
-                        checked="{tx_ok_prive_cookie_consent_banner_enabled}"
+                        checked="{tx_ok_prive_consent_banner_enabled}"
                         class="form-check-input"
                     />
-                    <label class="form-check-label" for="tx_ok_prive_cookie_consent_banner_enabled">
+                    <label class="form-check-label" for="tx_ok_prive_consent_banner_enabled">
                         <f:translate key="form.label.banner_enabled" />
                     </label>
                 </div>
@@ -45,14 +45,14 @@
         </div>
 
         <div class="row mb-3">
-            <label class="col-sm-2 col-form-label" for="tx_ok_prive_cookie_consent_banner_script">
+            <label class="col-sm-2 col-form-label" for="tx_ok_prive_consent_banner_script">
                 <f:translate key="form.label.banner_script" />
             </label>
             <div class="col-sm-10">
                 <f:form.textarea
-                    id="tx_ok_prive_cookie_consent_banner_script"
-                    name="tx_ok_prive_cookie_consent_banner_script"
-                    value="{tx_ok_prive_cookie_consent_banner_script}"
+                    id="tx_ok_prive_consent_banner_script"
+                    name="tx_ok_prive_consent_banner_script"
+                    value="{tx_ok_prive_consent_banner_script}"
                     rows="20"
                     cols="80"
                     placeholder="{f:translate(key:'form.placeholder.javascript_code')}"

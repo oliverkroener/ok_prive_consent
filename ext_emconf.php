@@ -1,7 +1,7 @@
 <?php
 $EM_CONF[$_EXTKEY] = [
-    'title' => 'Prive Cookie Consent',
-    'description' => 'Provides a backend module to manage privacy cookie consent scripts for Prive Cookie consent.',
+    'title' => 'Prive Consent',
+    'description' => 'Provides a backend module to manage privacy consent scripts for Prive Consent.',
     'category' => 'module',
     'author' => 'Oliver Kroener',
     'author_email' => 'ok@oliver-kroener.de',

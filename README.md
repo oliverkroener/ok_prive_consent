@@ -1,6 +1,6 @@
-# Prive Cookie Consent for TYPO3
+# Prive Consent for TYPO3
 
-A TYPO3 backend module for managing [Prive Cookie Consent](https://www.prive.eu/) banner scripts. Edit, enable, and deploy consent scripts directly from the TYPO3 backend — no file access or deployment pipeline required.
+A TYPO3 backend module for managing [Prive Consent](https://www.prive.eu/) banner scripts. Edit, enable, and deploy consent scripts directly from the TYPO3 backend — no file access or deployment pipeline required.
 
 ## Features
 
@@ -26,7 +26,7 @@ No external PHP dependencies beyond `typo3/cms-core`.
 ### Composer (recommended)
 
 ```bash
-composer require oliverkroener/ok-prive-cookie-consent
+composer require oliverkroener/ok-prive-consent
 ```
 
 ### TYPO3 Extension Manager

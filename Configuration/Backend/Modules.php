@@ -1,6 +1,6 @@
 <?php
 
-use OliverKroener\OkPriveCookieConsent\Controller\ConsentController;
+use OliverKroener\OkPriveConsent\Controller\ConsentController;
 
 return [
     'web_prive_consent' => [
@@ -8,8 +8,8 @@ return [
         'access' => 'user,group',
         'path' => '/modules/web/prive-consent',
         'iconIdentifier' => 'module-prive-consent', // Register this icon separately
-        'labels' => 'LLL:EXT:ok_prive_cookie_consent/Resources/Private/Language/locallang.xlf',
-        'extensionName' => 'OkPriveCookieConsent',
+        'labels' => 'LLL:EXT:ok_prive_consent/Resources/Private/Language/locallang.xlf',
+        'extensionName' => 'OkPriveConsent',
         'controllerActions' => [
             ConsentController::class => [
                 'index',
