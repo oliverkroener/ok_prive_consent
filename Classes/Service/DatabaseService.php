@@ -2,14 +2,15 @@
 
 namespace OliverKroener\OkPriveCookieConsent\Service;
 
-use OliverKroener\Helpers\Service\SiteRootService;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Exception\SiteNotFoundException;
+use TYPO3\CMS\Core\Site\SiteFinder;
 
 class DatabaseService
 {
     public function __construct(
-        private readonly SiteRootService $siteRootService,
+        private readonly SiteFinder $siteFinder,
         private readonly ConnectionPool $connectionPool,
     ) {
     }
@@ -19,15 +20,15 @@ class DatabaseService
      */
     public function getConsentScripts(int $pageId): ?array
     {
-        $siteRootPid = $this->siteRootService->findNextSiteRoot($pageId);
-
-        if (!$siteRootPid) {
+        try {
+            $siteRootPid = $this->siteFinder->getSiteByPageId($pageId)->getRootPageId();
+        } catch (SiteNotFoundException) {
             return null;
         }
 
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable('sys_template');
         return $queryBuilder
-            ->select('tx_ok_prive_cookie_consent_banner_script')
+            ->select('tx_ok_prive_cookie_consent_banner_script', 'tx_ok_prive_cookie_consent_banner_enabled')
             ->from('sys_template')
             ->where(
                 $queryBuilder->expr()->eq('pid', $queryBuilder->createNamedParameter($siteRootPid, Connection::PARAM_INT))
@@ -39,11 +40,11 @@ class DatabaseService
     /**
      * Saves the consent script to the first sys_template record
      */
-    public function saveConsentScript(int $pageId, string $bannerScript): void
+    public function saveConsentScript(int $pageId, string $bannerScript, bool $enabled = false): void
     {
-        $siteRootPid = $this->siteRootService->findNextSiteRoot($pageId);
-
-        if (!$siteRootPid) {
+        try {
+            $siteRootPid = $this->siteFinder->getSiteByPageId($pageId)->getRootPageId();
+        } catch (SiteNotFoundException) {
             return;
         }
 
@@ -65,6 +66,7 @@ class DatabaseService
                     $updateQueryBuilder->expr()->eq('uid', $updateQueryBuilder->createNamedParameter((int)$record[0], Connection::PARAM_INT))
                 )
                 ->set('tx_ok_prive_cookie_consent_banner_script', $bannerScript)
+                ->set('tx_ok_prive_cookie_consent_banner_enabled', (int)$enabled, true, Connection::PARAM_INT)
                 ->executeStatement();
         }
     }
@@ -79,6 +81,12 @@ class DatabaseService
 
         $scripts = $this->getConsentScripts($pageId);
 
-        return $scripts['tx_ok_prive_cookie_consent_banner_script'] ?? '';
+        if (empty($scripts['tx_ok_prive_cookie_consent_banner_enabled'])) {
+            return '';
+        }
+
+        $script = trim($scripts['tx_ok_prive_cookie_consent_banner_script'] ?? '');
+
+        return $script !== '' ? $scripts['tx_ok_prive_cookie_consent_banner_script'] : '';
     }
 }

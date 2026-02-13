@@ -10,8 +10,40 @@
 
 <f:flashMessages />
 
+<f:if condition="{siteIdentifier}">
+    <div class="callout callout-info">
+        <div class="callout-body">
+            <strong><f:translate key="LLL:EXT:ok_prive_cookie_consent/Resources/Private/Language/locallang.xlf:label.siteIdentifier" />:</strong>
+            {siteIdentifier}
+            &nbsp;|&nbsp;
+            <strong><f:translate key="LLL:EXT:ok_prive_cookie_consent/Resources/Private/Language/locallang.xlf:label.siteRootPageId" />:</strong>
+            {siteRootPageId}
+        </div>
+    </div>
+</f:if>
+
 <f:form action="save" id="priveConsentForm" name="priveConsentForm">
     <div class="form-section">
+        <div class="row mb-3">
+            <div class="col-sm-2 col-form-label">
+                <f:translate key="form.label.banner_enabled" />
+            </div>
+            <div class="col-sm-10">
+                <div class="form-check form-switch mt-2">
+                    <f:form.checkbox
+                        id="tx_ok_prive_cookie_consent_banner_enabled"
+                        name="tx_ok_prive_cookie_consent_banner_enabled"
+                        value="1"
+                        checked="{tx_ok_prive_cookie_consent_banner_enabled}"
+                        class="form-check-input"
+                    />
+                    <label class="form-check-label" for="tx_ok_prive_cookie_consent_banner_enabled">
+                        <f:translate key="form.label.banner_enabled" />
+                    </label>
+                </div>
+            </div>
+        </div>
+
         <div class="row mb-3">
             <label class="col-sm-2 col-form-label" for="tx_ok_prive_cookie_consent_banner_script">
                 <f:translate key="form.label.banner_script" />

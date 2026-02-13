@@ -10,5 +10,3 @@ services:
   # Public: required for TypoScript USER function calls
   OliverKroener\OkPriveCookieConsent\Service\DatabaseService:
     public: true
-    arguments:
-      $siteRootService: '@OliverKroener\Helpers\Service\SiteRootService'

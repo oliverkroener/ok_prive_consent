@@ -6,26 +6,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 TYPO3 CMS extension (`ok_prive_cookie_consent`) providing a backend module for managing Prive Cookie Consent banner scripts. Administrators edit JavaScript snippets via a Monaco Editor in the TYPO3 backend; the scripts are stored in the `sys_template` table and rendered on the frontend via TypoScript.
 
-- **TYPO3 compatibility:** 12.4 – 14.x
+- **TYPO3 compatibility:** 12.4 – 14.x (14 via `@dev`)
 - **PHP namespace:** `OliverKroener\OkPriveCookieConsent\`
 - **Extension key:** `ok_prive_cookie_consent`
-- **External dependency:** `oliverkroener/ok-typo3-helper` (provides `SiteRootService`)
+- **External dependencies:** none (only `typo3/cms-core`)
 
 ## Build Commands
 
-Frontend assets (CSS/JS) are built with Vite. All commands run from the `design/` directory:
-
-```bash
-cd design
-npm install          # install dependencies
-npm start            # dev server on port 8080
-npm run build        # production build to design/dist/
-bash copyFiles.sh    # copy & rename built assets into Resources/Public/
-```
-
-The full build-and-deploy cycle is: `npm run build && bash copyFiles.sh`. The `copyFiles.sh` script renames bundles to `index-kroenerdigital.{css,js}`, strips ES module exports from JS, fixes asset URLs in CSS, and copies font files.
-
-There are no PHP-level build, lint, or test commands configured.
+There are no build, lint, or test commands configured. The `design/` directory (formerly used for Vite-based frontend builds) has been removed; CSS/JS assets in `Resources/Public/` are maintained directly.
 
 ## Architecture
 
@@ -34,12 +22,11 @@ There are no PHP-level build, lint, or test commands configured.
 ```
 TYPO3 Backend → ConsentController → DatabaseService → sys_template table
                                          ↑
-                                    SiteRootService (from ok-typo3-helper)
+                                    SiteFinder (TYPO3 core)
 ```
 
-- **`ConsentController`** – Extbase controller (`#[AsController]`) with `indexAction` (load form), `saveAction` (persist script), `errorAction` (no site root found). Uses `ModuleTemplateFactory` for rendering.
-- **`DatabaseService`** – Queries/updates the custom `tx_ok_prive_cookie_consent_banner_script` field on `sys_template`. Also exposes `renderBannerScript()` as a TypoScript USER function for frontend output. `ConnectionPool` and `SiteRootService` are injected via constructor.
-- **`SiteRootService`** – Injected into `DatabaseService` via constructor; locates the site root page for context.
+- **`ConsentController`** – Extbase controller (`#[AsController]`) with `indexAction` (load form), `saveAction` (persist script), `errorAction` (no site root found). Uses `ModuleTemplateFactory` and `SiteFinder` for rendering.
+- **`DatabaseService`** – Queries/updates the custom `tx_ok_prive_cookie_consent_banner_script` field on `sys_template`. Also exposes `renderBannerScript()` as a TypoScript USER function for frontend output. Uses `SiteFinder` to resolve the site root page.
 
 ### Frontend Rendering
 
@@ -55,7 +42,7 @@ Fluid templates in `Resources/Private/Templates/Consent/`. Templates are rendere
 
 ### Frontend Design
 
-`design/src/` contains SCSS (Bootstrap 5 + custom component files) and JS (Monaco Editor initialization, flash message auto-hide). Brand colors: primary `#f05722`, secondary `#0fa8dd`.
+Backend JS/CSS assets live in `Resources/Public/`. Monaco Editor is loaded as a TYPO3 backend JavaScript module. Brand colors: primary `#f05722`, secondary `#0fa8dd`.
 
 ## TYPO3 Cross-Version Notes
 

@@ -58,9 +58,21 @@
         <source>Please select a root site or a page that contains a site root and template!</source>
         <target>Bitte wählen Sie eine Root-Site oder eine Seite, die eine Root-Site und eine Vorlage enthält!</target>
       </trans-unit>
+      <trans-unit id="form.label.banner_enabled" xml:space="preserve">
+        <source>Enable Prive script</source>
+        <target>Prive-Skript aktivieren</target>
+      </trans-unit>
       <trans-unit id="form.label.banner_script" xml:space="preserve">
-        <source>Banner script</source>
-        <target>Banner-Skript</target>
+        <source>Prive script</source>
+        <target>Prive-Skript</target>
+      </trans-unit>
+      <trans-unit id="label.siteIdentifier" xml:space="preserve">
+        <source>Site</source>
+        <target>Website</target>
+      </trans-unit>
+      <trans-unit id="label.siteRootPageId" xml:space="preserve">
+        <source>Site Root Page ID</source>
+        <target>Wurzelseiten-ID</target>
       </trans-unit>
     </body>
   </file>
