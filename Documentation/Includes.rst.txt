@@ -1,0 +1,4 @@
+..  This file is included by all other rst files in this documentation.
+
+..  |extension_key| replace:: ok_prive_cookie_consent
+..  |extension_name| replace:: Prive Cookie Consent
