@@ -1,6 +1,6 @@
 <?php
 
-namespace OliverKroener\OkPriveCookieConsent\Service;
+namespace OliverKroener\OkPriveConsent\Service;
 
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -9,10 +9,15 @@ use TYPO3\CMS\Core\Site\SiteFinder;
 
 class DatabaseService
 {
+    protected SiteFinder $siteFinder;
+    protected ConnectionPool $connectionPool;
+
     public function __construct(
-        private readonly SiteFinder $siteFinder,
-        private readonly ConnectionPool $connectionPool,
+        SiteFinder $siteFinder,
+        ConnectionPool $connectionPool
     ) {
+        $this->siteFinder = $siteFinder;
+        $this->connectionPool = $connectionPool;
     }
 
     /**
@@ -22,7 +27,7 @@ class DatabaseService
     {
         try {
             $siteRootPid = $this->siteFinder->getSiteByPageId($pageId)->getRootPageId();
-        } catch (SiteNotFoundException) {
+        } catch (SiteNotFoundException $e) {
             return null;
         }
 
@@ -44,7 +49,7 @@ class DatabaseService
     {
         try {
             $siteRootPid = $this->siteFinder->getSiteByPageId($pageId)->getRootPageId();
-        } catch (SiteNotFoundException) {
+        } catch (SiteNotFoundException $e) {
             return;
         }
 
@@ -76,8 +81,7 @@ class DatabaseService
      */
     public function renderBannerScript(string $content, array $conf): string
     {
-        $request = $GLOBALS['TYPO3_REQUEST'];
-        $pageId = (int)$request->getAttribute('routing')->getPageId();
+        $pageId = (int)$GLOBALS['TSFE']->id;
 
         $scripts = $this->getConsentScripts($pageId);
 

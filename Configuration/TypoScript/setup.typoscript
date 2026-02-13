@@ -1,14 +1,14 @@
 # Define a USER object to fetch and render the banner script using a custom PHP function
 lib.priveScript = USER
 lib.priveScript {
-    userFunc = OliverKroener\OkPriveCookieConsent\Service\DatabaseService->renderBannerScript
+    userFunc = OliverKroener\OkPriveConsent\Service\DatabaseService->renderBannerScript
     stdWrap.trim = 1
 }
 
 page { 
     # Include CSS for cookie button
     includeCSS {
-        cookieButton = EXT:ok_prive_cookie_consent/Resources/Public/Css/prive-cookie-button.css
+        cookieButton = EXT:ok_prive_consent/Resources/Public/Css/prive-cookie-button.css
     }
  
     # Insert cookie button and banner script before </body>
@@ -19,7 +19,7 @@ page {
         10.value = <a href="#" class="prive-cookie-button" data-cc="c-settings">&nbsp;</a>
 
         20 = USER
-        20.userFunc = OliverKroener\OkPriveCookieConsent\Service\DatabaseService->renderBannerScript
+        20.userFunc = OliverKroener\OkPriveConsent\Service\DatabaseService->renderBannerScript
         20.stdWrap.trim = 1
     }
 }   

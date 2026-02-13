@@ -1,27 +1,29 @@
 <?php
 
-namespace OliverKroener\OkPriveCookieConsent\Controller;
+namespace OliverKroener\OkPriveConsent\Controller;
 
-use OliverKroener\OkPriveCookieConsent\Service\DatabaseService;
+use OliverKroener\OkPriveConsent\Service\DatabaseService;
 use Psr\Http\Message\ResponseInterface;
-use TYPO3\CMS\Backend\Attribute\AsController;
-use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
+use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Localization\LanguageService;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Site\SiteFinder;
-use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
-#[AsController]
 class ConsentController extends ActionController
 {
+    protected DatabaseService $databaseService;
+    protected SiteFinder $siteFinder;
+
     public function __construct(
-        private readonly DatabaseService $databaseService,
-        private readonly ModuleTemplateFactory $moduleTemplateFactory,
-        private readonly SiteFinder $siteFinder,
+        DatabaseService $databaseService,
+        SiteFinder $siteFinder
     ) {
+        $this->databaseService = $databaseService;
+        $this->siteFinder = $siteFinder;
     }
 
     /**
@@ -34,23 +36,22 @@ class ConsentController extends ActionController
 
         if (!empty($scripts)) {
             $this->loadFormDirtyCheckAssets();
-            $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
-            $moduleTemplate->assignMultiple([
+            $this->view->assignMultiple([
                 'tx_ok_prive_cookie_consent_banner_script' => $scripts['tx_ok_prive_cookie_consent_banner_script'],
                 'tx_ok_prive_cookie_consent_banner_enabled' => (bool)$scripts['tx_ok_prive_cookie_consent_banner_enabled'],
             ]);
 
             try {
                 $site = $this->siteFinder->getSiteByPageId($pageId);
-                $moduleTemplate->assignMultiple([
+                $this->view->assignMultiple([
                     'siteIdentifier' => $site->getIdentifier(),
                     'siteRootPageId' => $site->getRootPageId(),
                 ]);
-            } catch (\TYPO3\CMS\Core\Exception\SiteNotFoundException) {
+            } catch (\TYPO3\CMS\Core\Exception\SiteNotFoundException $e) {
                 // Site info is optional; proceed without it
             }
 
-            return $moduleTemplate->renderResponse('Consent/Index');
+            return $this->htmlResponse();
         }
 
         return $this->redirect('error');
@@ -61,8 +62,7 @@ class ConsentController extends ActionController
      */
     public function errorAction(): ResponseInterface
     {
-        $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
-        return $moduleTemplate->renderResponse('Consent/Error');
+        return $this->htmlResponse();
     }
 
     /**
@@ -76,10 +76,14 @@ class ConsentController extends ActionController
 
         $this->databaseService->saveConsentScript($pageId, $bannerScript, $enabled);
 
+        // Flush frontend page cache so the updated script is served immediately
+        $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
+        $cacheManager->flushCachesInGroup('pages');
+
         $this->addFlashMessage(
-            LocalizationUtility::translate('flash.message.success', 'ok_prive_cookie_consent'),
+            LocalizationUtility::translate('flash.message.success', 'ok_prive_consent'),
             '',
-            ContextualFeedbackSeverity::OK
+            AbstractMessage::OK
         );
 
         return $this->redirect('index');
@@ -89,8 +93,8 @@ class ConsentController extends ActionController
     {
         $languageService = $this->getLanguageService();
         $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
-        $pageRenderer->loadJavaScriptModule(
-            '@oliverkroener/ok-prive-cookie-consent/backend/form-dirty-check.js'
+        $pageRenderer->loadRequireJsModule(
+            'TYPO3/CMS/OkPriveConsent/Backend/FormDirtyCheck'
         );
         $pageRenderer->addInlineLanguageLabelArray([
             'label.confirm.close_without_save.title' => $languageService->sL(
