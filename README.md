@@ -6,9 +6,9 @@ TYPO3 backend module for managing [Prive Cookie Consent](https://www.prive.eu/) 
 |------------------|--------------------------------------|
 | Extension key    | `ok_prive_consent`                   |
 | Composer package | `oliverkroener/ok-prive-consent`     |
-| TYPO3            | 11.5 LTS                             |
-| PHP              | >= 8.0                               |
-| Version          | 3.0.0                                |
+| TYPO3            | 10.4 LTS                             |
+| PHP              | >= 7.4                               |
+| Version          | 2.0.0                                |
 | Author           | [Oliver Kroener](https://www.oliver-kroener.de) |
 | License          | GPL-2.0-or-later                     |
 

@@ -19,8 +19,9 @@ The static TypoScript template **[kroener.DIGITAL] Prive Consent** configures:
 
 - ``lib.priveScript`` -- a ``USER`` object that calls
   ``DatabaseService->renderBannerScript()`` to output the consent script
-- ``page.footerData`` -- inserts the cookie button HTML and consent script
-  before ``</body>``
+- ``page.footerData`` -- a ``USER`` object that calls
+  ``DatabaseService->renderBannerScript()`` to output both the cookie settings
+  button and the consent script before ``</body>``
 - ``page.includeCSS`` -- loads the cookie button stylesheet
 
 The ``footerData`` keys use ``crc32('ok_prive_cookie_consent')`` to avoid

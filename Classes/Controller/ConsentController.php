@@ -3,7 +3,6 @@
 namespace OliverKroener\OkPriveConsent\Controller;
 
 use OliverKroener\OkPriveConsent\Service\DatabaseService;
-use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
@@ -29,9 +28,9 @@ class ConsentController extends ActionController
     /**
      * Displays the form to edit the consent script
      */
-    public function indexAction(): ResponseInterface
+    public function indexAction(): void
     {
-        $pageId = (int)($this->request->getParsedBody()['id'] ?? $this->request->getQueryParams()['id'] ?? 0);
+        $pageId = (int)GeneralUtility::_GP('id');
         $scripts = $this->databaseService->getConsentScripts($pageId);
 
         if (!empty($scripts)) {
@@ -51,26 +50,25 @@ class ConsentController extends ActionController
                 // Site info is optional; proceed without it
             }
 
-            return $this->htmlResponse();
+            return;
         }
 
-        return $this->redirect('error');
+        $this->redirect('error');
     }
 
     /**
      * Shows an error when no site root exists
      */
-    public function errorAction(): ResponseInterface
+    public function errorAction(): void
     {
-        return $this->htmlResponse();
     }
 
     /**
      * Saves the consent script
      */
-    public function saveAction(): ResponseInterface
+    public function saveAction(): void
     {
-        $pageId = (int)($this->request->getParsedBody()['id'] ?? $this->request->getQueryParams()['id'] ?? 0);
+        $pageId = (int)GeneralUtility::_GP('id');
         $bannerScript = $this->request->getArgument('tx_ok_prive_cookie_consent_banner_script') ?? '';
         $enabled = (bool)($this->request->getArgument('tx_ok_prive_cookie_consent_banner_enabled') ?? false);
 
@@ -86,7 +84,7 @@ class ConsentController extends ActionController
             AbstractMessage::OK
         );
 
-        return $this->redirect('index');
+        $this->redirect('index');
     }
 
     private function loadFormDirtyCheckAssets(): void

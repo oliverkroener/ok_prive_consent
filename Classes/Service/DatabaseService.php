@@ -38,8 +38,8 @@ class DatabaseService
             ->where(
                 $queryBuilder->expr()->eq('pid', $queryBuilder->createNamedParameter($siteRootPid, Connection::PARAM_INT))
             )
-            ->executeQuery()
-            ->fetchAssociative() ?: null;
+            ->execute()
+            ->fetch() ?: null;
     }
 
     /**
@@ -60,19 +60,19 @@ class DatabaseService
             ->where(
                 $queryBuilder->expr()->eq('pid', $queryBuilder->createNamedParameter($siteRootPid, Connection::PARAM_INT))
             )
-            ->executeQuery()
-            ->fetchFirstColumn();
+            ->execute()
+            ->fetchColumn(0);
 
-        if (!empty($record)) {
+        if ($record !== false) {
             $updateQueryBuilder = $this->connectionPool->getQueryBuilderForTable('sys_template');
             $updateQueryBuilder
                 ->update('sys_template')
                 ->where(
-                    $updateQueryBuilder->expr()->eq('uid', $updateQueryBuilder->createNamedParameter((int)$record[0], Connection::PARAM_INT))
+                    $updateQueryBuilder->expr()->eq('uid', $updateQueryBuilder->createNamedParameter((int)$record, Connection::PARAM_INT))
                 )
                 ->set('tx_ok_prive_cookie_consent_banner_script', $bannerScript)
                 ->set('tx_ok_prive_cookie_consent_banner_enabled', (int)$enabled, true, Connection::PARAM_INT)
-                ->executeStatement();
+                ->execute();
         }
     }
 
@@ -90,7 +90,8 @@ class DatabaseService
         }
 
         $script = trim($scripts['tx_ok_prive_cookie_consent_banner_script'] ?? '');
+        $button = '<a href="#" class="prive-cookie-button" data-cc="c-settings">&nbsp;</a>';
 
-        return $script !== '' ? $scripts['tx_ok_prive_cookie_consent_banner_script'] : '';
+        return $button . ($script !== '' ? $script : '');
     }
 }

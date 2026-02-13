@@ -13,13 +13,9 @@ page {
  
     # Insert cookie button and banner script before </body>
     # Key 234797283 derived from crc32('ok_prive_cookie_consent') to avoid collisions
-    footerData.234797283 = COA
+    footerData.234797283 = USER
     footerData.234797283 {
-        10 = TEXT
-        10.value = <a href="#" class="prive-cookie-button" data-cc="c-settings">&nbsp;</a>
-
-        20 = USER
-        20.userFunc = OliverKroener\OkPriveConsent\Service\DatabaseService->renderBannerScript
-        20.stdWrap.trim = 1
+        userFunc = OliverKroener\OkPriveConsent\Service\DatabaseService->renderBannerScript
+        stdWrap.trim = 1
     }
 }   
