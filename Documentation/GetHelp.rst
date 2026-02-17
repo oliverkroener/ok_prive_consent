@@ -1,3 +1,5 @@
+..  include:: /Includes.rst.txt
+
 :navigation-title: Get Help
 
 ..  _help:

@@ -1,9 +1,9 @@
 # Prive Consent (`ok_prive_consent`)
 
-[![TYPO3 11](https://img.shields.io/badge/TYPO3-11-orange?logo=typo3)](https://get.typo3.org/version/11)
-[![PHP 8.0+](https://img.shields.io/badge/PHP-8.0%2B-777BB4?logo=php&logoColor=white)](https://www.php.net/)
+[![TYPO3 10](https://img.shields.io/badge/TYPO3-10-orange?logo=typo3)](https://get.typo3.org/version/10)
+[![PHP 7.2+](https://img.shields.io/badge/PHP-7.2%2B-777BB4?logo=php&logoColor=white)](https://www.php.net/)
 [![License: GPL v2+](https://img.shields.io/badge/License-GPL%20v2%2B-blue)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
-[![Version](https://img.shields.io/badge/version-3.1.0-green)](https://github.com/oliverkroener/ok-prive-consent)
+[![Version](https://img.shields.io/badge/version-2.1.0-green)](https://github.com/oliverkroener/ok-prive-consent)
 
 TYPO3 backend module for managing [Prive Cookie Consent](https://www.prive.eu/) banner scripts.
 
@@ -18,8 +18,8 @@ TYPO3 backend module for managing [Prive Cookie Consent](https://www.prive.eu/) 
 
 ## Requirements
 
-- TYPO3 11.5 LTS
-- PHP >= 8.0
+- TYPO3 10.4 LTS
+- PHP >= 7.2
 
 ## Installation
 

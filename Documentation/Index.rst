@@ -77,6 +77,13 @@ TypoScript.
         ..  card-footer:: :ref:`View FAQ <faq>`
             :button-style: btn btn-primary
 
+    ..  card:: Get Help
+
+        Find support channels and report issues.
+
+        ..  card-footer:: :ref:`Get help <help>`
+            :button-style: btn btn-primary
+
     ..  card:: Contact
 
         Get in touch with the author for support, questions, or contributions.

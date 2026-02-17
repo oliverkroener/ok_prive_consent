@@ -35,7 +35,7 @@ Features
 Requirements
 ============
 
--  TYPO3 11.5 LTS
--  PHP >= 8.0
+-  TYPO3 10.4 LTS
+-  PHP >= 7.2
 -  A `Prive <https://www.prive.eu/>`__ account to obtain the consent JavaScript
    snippet
