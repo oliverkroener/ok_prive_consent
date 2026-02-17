@@ -6,11 +6,20 @@ use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Site\SiteFinder;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\PathUtility;
 
 class DatabaseService
 {
-    protected SiteFinder $siteFinder;
-    protected ConnectionPool $connectionPool;
+    /**
+     * @var SiteFinder
+     */
+    protected $siteFinder;
+
+    /**
+     * @var ConnectionPool
+     */
+    protected $connectionPool;
 
     public function __construct(
         SiteFinder $siteFinder,
@@ -38,8 +47,8 @@ class DatabaseService
             ->where(
                 $queryBuilder->expr()->eq('pid', $queryBuilder->createNamedParameter($siteRootPid, Connection::PARAM_INT))
             )
-            ->executeQuery()
-            ->fetchAssociative() ?: null;
+            ->execute()
+            ->fetch(\PDO::FETCH_ASSOC) ?: null;
     }
 
     /**
@@ -60,8 +69,8 @@ class DatabaseService
             ->where(
                 $queryBuilder->expr()->eq('pid', $queryBuilder->createNamedParameter($siteRootPid, Connection::PARAM_INT))
             )
-            ->executeQuery()
-            ->fetchFirstColumn();
+            ->execute()
+            ->fetchAll(\PDO::FETCH_COLUMN);
 
         if (!empty($record)) {
             $updateQueryBuilder = $this->connectionPool->getQueryBuilderForTable('sys_template');
@@ -72,7 +81,7 @@ class DatabaseService
                 )
                 ->set('tx_ok_prive_cookie_consent_banner_script', $bannerScript)
                 ->set('tx_ok_prive_cookie_consent_banner_enabled', (int)$enabled, true, Connection::PARAM_INT)
-                ->executeStatement();
+                ->execute();
         }
     }
 
@@ -90,7 +99,12 @@ class DatabaseService
         }
 
         $script = trim($scripts['tx_ok_prive_cookie_consent_banner_script'] ?? '');
+        $cssFile = PathUtility::getAbsoluteWebPath(
+            GeneralUtility::getFileAbsFileName('EXT:ok_prive_consent/Resources/Public/Css/prive-cookie-button.css')
+        );
+        $css = '<link rel="stylesheet" href="' . htmlspecialchars($cssFile) . '">';
+        $button = '<a href="#" class="prive-cookie-button" data-cc="c-settings">&nbsp;</a>';
 
-        return $script !== '' ? $scripts['tx_ok_prive_cookie_consent_banner_script'] : '';
+        return $css . ($script !== '' ? $script : '') . $button;
     }
 }
