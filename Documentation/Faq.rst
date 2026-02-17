@@ -1,3 +1,5 @@
+..  include:: /Includes.rst.txt
+
 :navigation-title: FAQ
 
 ..  _faq:
