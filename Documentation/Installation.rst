@@ -20,7 +20,7 @@ Install the extension via Composer:
 
     composer req oliverkroener/ok-prive-consent
 
-See also `Installing extensions, TYPO3 Getting started <https://docs.typo3.org/permalink/t3start:installing-extensions>`_.
+See also `Installing extensions <https://docs.typo3.org/m/typo3/tutorial-getting-started/main/en-us/Extensions/Management.html>`_.
 
 ..  _installation-extension-manager:
 

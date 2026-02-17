@@ -1,24 +1,25 @@
-# Prive Consent — TYPO3 Extension
+# Prive Consent (`ok_prive_consent`)
+
+[![TYPO3 11](https://img.shields.io/badge/TYPO3-11-orange?logo=typo3)](https://get.typo3.org/version/11)
+[![PHP 8.0+](https://img.shields.io/badge/PHP-8.0%2B-777BB4?logo=php&logoColor=white)](https://www.php.net/)
+[![License: GPL v2+](https://img.shields.io/badge/License-GPL%20v2%2B-blue)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
+[![Version](https://img.shields.io/badge/version-3.1.0-green)](https://github.com/oliverkroener/ok-prive-consent)
 
 TYPO3 backend module for managing [Prive Cookie Consent](https://www.prive.eu/) banner scripts.
-
-|                  |                                      |
-|------------------|--------------------------------------|
-| Extension key    | `ok_prive_consent`                   |
-| Composer package | `oliverkroener/ok-prive-consent`     |
-| TYPO3            | 11.5 LTS                             |
-| PHP              | >= 8.0                               |
-| Version          | 3.0.0                                |
-| Author           | [Oliver Kroener](https://www.oliver-kroener.de) |
-| License          | GPL-2.0-or-later                     |
 
 ## Features
 
 - **Backend module** under *Web > Prive Consent* for editing consent scripts
 - **Enable/disable toggle** to activate or deactivate the banner without removing the script
 - **Multi-site support** — automatically resolves the correct site root per TYPO3 site configuration
-- **Unsaved changes protection** — warns before navigating away with unsaved modifications
+- **Unsaved changes protection** — warns before navigating away with unsaved modifications (with "save and close" support)
 - **Automatic frontend rendering** — script and cookie settings button injected via TypoScript `page.footerData`
+- **Cache flush on save** — frontend page cache is cleared automatically after saving
+
+## Requirements
+
+- TYPO3 11.5 LTS
+- PHP >= 8.0
 
 ## Installation
 
@@ -56,6 +57,30 @@ The extension works out of the box after including the static TypoScript templat
 
 Brand colours: primary `#f05722`, secondary `#0fa8dd`.
 
+## Architecture
+
+```
+TYPO3 Backend → ConsentController → DatabaseService → sys_template table
+                                         ↑
+                                    SiteFinder (TYPO3 core)
+```
+
+| Component | Path | Description |
+|-----------|------|-------------|
+| `ConsentController` | `Classes/Controller/` | Extbase controller with `index`, `save`, `error` actions |
+| `DatabaseService` | `Classes/Service/` | Reads/writes consent fields on `sys_template`; renders banner script via TypoScript USER |
+| TCA override | `Configuration/TCA/Overrides/sys_template.php` | Registers static TypoScript template |
+| TypoScript | `Configuration/TypoScript/setup.typoscript` | Defines `lib.priveScript` USER object and `page.footerData` |
+| Fluid templates | `Resources/Private/Templates/Consent/` | `Index.html` (form), `Error.html` (no site root) |
+| FormDirtyCheck | `Resources/Public/JavaScript/Backend/` | AMD/RequireJS module for unsaved changes detection |
+
+### Database fields (on `sys_template`)
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `tx_ok_prive_cookie_consent_banner_script` | text | The JavaScript consent snippet |
+| `tx_ok_prive_cookie_consent_banner_enabled` | boolean | Enable/disable toggle |
+
 ## Documentation
 
 Full documentation is available in the `Documentation/` directory. Generate rendered docs locally with:
@@ -66,9 +91,10 @@ make docs
 
 This uses the official [TYPO3 Documentation rendering container](https://github.com/TYPO3-Documentation/render-guides).
 
-## Support
+## License
 
-- TYPO3 Slack: https://typo3.org/community/meet/chat-slack
-- TYPO3 Forum: https://talk.typo3.org/c/typo3-questions/19
-- Author contact: https://www.oliver-kroener.de
-- Issues: https://github.com/oliverkroener/ok-prive-consent/issues
+GPL-2.0-or-later
+
+## Author
+
+**Oliver Kroener** — [oliver-kroener.de](https://www.oliver-kroener.de) — [ok@oliver-kroener.de](mailto:ok@oliver-kroener.de)
