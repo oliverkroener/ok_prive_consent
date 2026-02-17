@@ -6,6 +6,7 @@ use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Site\SiteFinder;
+use TYPO3\CMS\Core\Utility\PathUtility;
 
 class DatabaseService
 {
@@ -90,7 +91,14 @@ class DatabaseService
         }
 
         $script = trim($scripts['tx_ok_prive_cookie_consent_banner_script'] ?? '');
+        if ($script === '') {
+            return '';
+        }
 
-        return $script !== '' ? $scripts['tx_ok_prive_cookie_consent_banner_script'] : '';
+        $cssPath = PathUtility::getPublicResourceWebPath('EXT:ok_prive_consent/Resources/Public/Css/prive-cookie-button.css');
+
+        return $script
+            . '<link rel="stylesheet" href="' . htmlspecialchars($cssPath) . '">'
+            . '<a href="#" class="prive-cookie-button" data-cc="c-settings">&nbsp;</a>';
     }
 }
