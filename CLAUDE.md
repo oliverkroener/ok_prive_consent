@@ -6,13 +6,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 TYPO3 CMS extension (`ok_prive_consent`) providing a backend module for managing Prive Cookie Consent banner scripts. Administrators edit JavaScript snippets in the TYPO3 backend; the scripts are stored in the `sys_template` table and rendered on the frontend via TypoScript.
 
-- **TYPO3 compatibility:** 11.5 LTS
-- **PHP:** >= 8.0
+- **TYPO3 compatibility:** 12.4 LTS, 13.4 LTS
+- **PHP:** >= 8.1
 - **PHP namespace:** `OliverKroener\OkPriveConsent\`
 - **Extension key:** `ok_prive_consent`
 - **Composer package:** `oliverkroener/ok-prive-consent`
 - **Version:** 3.1.0
-- **External dependencies:** none (only `typo3/cms-core`)
+- **External dependencies:** `typo3/cms-core`, `typo3/cms-backend`
 
 ## Build Commands
 
@@ -25,17 +25,17 @@ Documentation can be generated via `make docs` (requires Docker).
 ### Request Flow
 
 ```
-TYPO3 Backend → ConsentController → DatabaseService → sys_template table
-                                         ↑
-                                    SiteFinder (TYPO3 core)
+TYPO3 Backend → ConsentController (PSR-7) → sys_template table
+                      ↑
+                 ModuleTemplateFactory, SiteFinder, ConnectionPool (TYPO3 core)
 ```
 
-- **`ConsentController`** – Extbase controller with `indexAction` (load form), `saveAction` (persist script), `errorAction` (no site root found). Uses `$this->view` and `$this->htmlResponse()` for rendering.
-- **`DatabaseService`** – Queries/updates the custom `tx_ok_prive_cookie_consent_banner_script` and `tx_ok_prive_cookie_consent_banner_enabled` fields on `sys_template`. Also exposes `renderBannerScript()` as a TypoScript USER function for frontend output. Uses `SiteFinder` to resolve the site root page.
+- **`ConsentController`** (`Classes/Controller/Backend/ConsentController.php`) – PSR-7 controller with `#[AsController]` attribute. Uses `ModuleTemplateFactory` for rendering, `UriBuilder` for routing, and `PageRenderer` for JS module loading. Actions: `indexAction` (load form with no-page/no-site/edit states), `saveAction` (persist script + flush page cache).
+- **`DatabaseService`** (`Classes/Service/DatabaseService.php`) – Renders the banner script for frontend output as a TypoScript USER function. Uses `ContentObjectRenderer` to resolve the current page ID via routing attribute.
 
 ### Frontend Rendering
 
-TypoScript in `Configuration/TypoScript/setup.typoscript` defines `lib.priveScript` (USER object calling `DatabaseService->renderBannerScript`), inserts the cookie button HTML and banner script via `page.footerData` (keyed by `crc32('ok_prive_cookie_consent')` to avoid collisions), and includes CSS via `page.includeCSS`.
+TypoScript in `Configuration/TypoScript/setup.typoscript` defines `lib.priveScript` (USER object calling `DatabaseService->renderBannerScript`), inserts the cookie button HTML and banner script via `page.footerData` (keyed by `crc32('ok_prive_cookie_consent')` to avoid collisions).
 
 The banner script is only rendered when the `tx_ok_prive_cookie_consent_banner_enabled` flag is set.
 
@@ -45,12 +45,13 @@ Configured in `Configuration/Services.yaml` (Symfony DI). Autowiring is enabled;
 
 ### Module Registration
 
-- Backend module registered in `ext_tables.php` via `ExtensionUtility::registerModule()` with page tree navigation component.
-- Module icon registered in `ext_localconf.php` via `IconRegistry::registerIcon()`.
+- Backend module registered declaratively in `Configuration/Backend/Modules.php` with page tree navigation component and route definitions.
+- Module icon registered declaratively in `Configuration/Icons.php`.
+- ES6 JavaScript modules mapped in `Configuration/JavaScriptModules.php` under `@oliverkroener/ok-prive-consent/`.
 
 ### Templates
 
-Fluid templates in `Resources/Private/Templates/Consent/` (`Index.html`, `Error.html`). Templates use `<f:layout name="Module" />` with the layout at `Resources/Private/Layouts/Module.html` (renders via `<be:moduleLayout>`). Localizations in XLIFF format (`locallang.xlf` for English, `de.locallang.xlf` for German).
+Fluid template at `Resources/Private/Templates/Backend/Consent/Index.html`. Uses `<f:layout name="Module" />` provided by `ModuleTemplateFactory`. Template handles three states: no page selected, no site found, and edit form. Localizations in XLIFF format (`locallang.xlf` for English, `de.locallang.xlf` for German).
 
 ### Database Fields
 
@@ -65,24 +66,24 @@ Note: field names retain the original `ok_prive_cookie_consent` prefix for backw
 
 Backend JS/CSS assets live in `Resources/Public/`. Brand colors: primary `#f05722`, secondary `#0fa8dd`.
 
-## TYPO3 11.5 API Patterns
+## TYPO3 12+13 API Patterns
 
-- **`$this->view`** — use Extbase's built-in view (`$this->view->assignMultiple()` + `$this->htmlResponse()`)
-- **`$GLOBALS['TSFE']->id`** — use TSFE to get the current page ID in frontend context
+- **`#[AsController]`** — attribute marking PSR-7 backend controllers
+- **`ModuleTemplateFactory`** — creates module views (`$view = $this->moduleTemplateFactory->create($request)`)
+- **`$view->renderResponse('Backend/Consent/Index')`** — renders Fluid template and returns PSR-7 response
+- **`UriBuilder::buildUriFromRoute()`** — generates backend module route URIs
+- **`ContextualFeedbackSeverity::OK`** — flash message severity enum (replaces `AbstractMessage::OK`)
+- **`FlashMessage` + `FlashMessageService`** — explicit flash message creation and enqueuing
+- **`ContentObjectRenderer::getRequest()->getAttribute('routing')->getPageId()`** — get page ID in frontend context (replaces `$GLOBALS['TSFE']->id`)
 - **`$GLOBALS['LANG']`** — LanguageService for backend label resolution
-- **`Connection::PARAM_INT`** — TYPO3 connection constants (not `\PDO::PARAM_INT`)
-- **`executeQuery()` / `executeStatement()`** — available in v11.5
-- **`loadRequireJsModule()`** — RequireJS/AMD module loading (v11 pattern)
-- **`ExtensionUtility::registerModule()`** — backend module registration in `ext_tables.php`
-- **`IconRegistry::registerIcon()`** — icon registration in `ext_localconf.php`
-- **`AbstractMessage::OK`** — flash message severity constants (not `ContextualFeedbackSeverity`)
+- **`Connection::PARAM_INT`** — TYPO3 connection constants
 - **`footerData` keys** — use high numeric keys derived from `crc32()` of extension key to avoid collisions
 
 ## JavaScript
 
-Backend JS uses AMD/RequireJS format (`define([...], function (...) { ... })`). The dirty-check module is at `Resources/Public/JavaScript/Backend/FormDirtyCheck.js` and is loaded via `loadRequireJsModule('TYPO3/CMS/OkPriveConsent/Backend/FormDirtyCheck')`.
+Backend JS uses ES6 module format. The dirty-check module is at `Resources/Public/JavaScript/backend/form-dirty-check.js` and is loaded via `loadJavaScriptModule('@oliverkroener/ok-prive-consent/backend/form-dirty-check.js')`.
 
-`FormDirtyCheck.js` integrates with TYPO3's `ConsumerScope` to intercept page tree clicks and module navigation, showing an unsaved-changes confirmation modal (with "save and close" support via AJAX form submission).
+`form-dirty-check.js` integrates with TYPO3's `ConsumerScope` to intercept page tree clicks and module navigation, showing an unsaved-changes confirmation modal (with "save and close" support via fetch-based AJAX form submission).
 
 ## Git Commit Convention
 

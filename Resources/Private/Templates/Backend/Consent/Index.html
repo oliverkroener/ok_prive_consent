@@ -1,0 +1,99 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+
+<f:layout name="Module" />
+
+<f:section name="Content">
+    <f:if condition="{noPageSelected}">
+        <f:then>
+            <div class="callout callout-info">
+                <div class="media">
+                    <div class="media-body">
+                        <p><f:translate key="form.text.error" extensionName="ok_prive_consent" /></p>
+                    </div>
+                </div>
+            </div>
+        </f:then>
+        <f:else if="{noSiteFound}">
+            <div class="callout callout-warning">
+                <div class="media">
+                    <div class="media-body">
+                        <p><f:translate key="form.text.error" extensionName="ok_prive_consent" /></p>
+                    </div>
+                </div>
+            </div>
+        </f:else>
+        <f:else>
+            <f:flashMessages queueIdentifier="core.template.flashMessages" />
+
+            <f:if condition="{siteIdentifier}">
+                <div class="callout callout-info">
+                    <div class="callout-body">
+                        <strong><f:translate key="label.siteIdentifier" extensionName="ok_prive_consent" />:</strong>
+                        {siteIdentifier}
+                        &nbsp;|&nbsp;
+                        <strong><f:translate key="label.siteRootPageId" extensionName="ok_prive_consent" />:</strong>
+                        {siteRootPageId}
+                    </div>
+                </div>
+            </f:if>
+
+            <form action="{saveUrl}" method="post" id="PriveConsentForm" class="mt-3">
+                <div class="form-section">
+                    <div class="row mb-3">
+                        <div class="col-sm-2 col-form-label">
+                            <f:translate key="form.label.banner_enabled" extensionName="ok_prive_consent" />
+                        </div>
+                        <div class="col-sm-10">
+                            <div class="form-check form-switch mt-2">
+                                <input
+                                    type="checkbox"
+                                    id="tx_ok_prive_cookie_consent_banner_enabled"
+                                    name="tx_ok_prive_cookie_consent_banner_enabled"
+                                    value="1"
+                                    class="form-check-input"
+                                    {f:if(condition: tx_ok_prive_cookie_consent_banner_enabled, then: 'checked="checked"')}
+                                />
+                                <label class="form-check-label" for="tx_ok_prive_cookie_consent_banner_enabled">
+                                    <f:translate key="form.label.banner_enabled" extensionName="ok_prive_consent" />
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label" for="tx_ok_prive_cookie_consent_banner_script">
+                            <f:translate key="form.label.banner_script" extensionName="ok_prive_consent" />
+                        </label>
+                        <div class="col-sm-10">
+                            <textarea
+                                id="tx_ok_prive_cookie_consent_banner_script"
+                                name="tx_ok_prive_cookie_consent_banner_script"
+                                rows="20"
+                                cols="80"
+                                placeholder="{f:translate(key:'form.placeholder.javascript_code', extensionName:'ok_prive_consent')}"
+                                class="form-control font-monospace"
+                                style="font-size: 13px; tab-size: 4;"
+                            >{tx_ok_prive_cookie_consent_banner_script}</textarea>
+                            <div class="form-text">
+                                <f:translate key="module.description" extensionName="ok_prive_consent" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <core:icon identifier="actions-document-save" size="small" />
+                        <f:translate key="form.button.save" extensionName="ok_prive_consent" />
+                    </button>
+                </div>
+            </form>
+        </f:else>
+    </f:if>
+</f:section>
+
+</html>
