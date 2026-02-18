@@ -63,16 +63,25 @@ class DatabaseService
 
         $cssPath = PathUtility::getPublicResourceWebPath('EXT:ok_prive_consent/Resources/Public/Css/prive-cookie-button.css');
 
-        return $script
-            . '<link rel="stylesheet" href="' . htmlspecialchars($cssPath) . '">'
-            . '<a href="#" class="prive-cookie-button" data-cc="c-settings">&nbsp;</a>';
+        // Order: CSS → cookie button → Prive script
+        // The button must be in the DOM before Prive executes so it can bind its click handler.
+        return '<link rel="stylesheet" href="' . htmlspecialchars($cssPath) . '">'
+            . '<a href="#" class="prive-cookie-button" data-cc="c-settings">&nbsp;</a>'
+            . $script;
     }
 
     private function getPageId(): int
     {
-        $routing = $this->cObj->getRequest()->getAttribute('routing');
-        if ($routing !== null && method_exists($routing, 'getPageId')) {
-            return $routing->getPageId();
+        if (isset($this->cObj)) {
+            $routing = $this->cObj->getRequest()->getAttribute('routing');
+            if ($routing !== null && method_exists($routing, 'getPageId')) {
+                return $routing->getPageId();
+            }
+        }
+
+        // Fallback: use TSFE page ID (works reliably in footerData context)
+        if (isset($GLOBALS['TSFE']->id)) {
+            return (int)$GLOBALS['TSFE']->id;
         }
 
         return 0;

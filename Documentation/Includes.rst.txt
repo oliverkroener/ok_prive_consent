@@ -2,3 +2,5 @@
 
 ..  |extension_key| replace:: ok_prive_consent
 ..  |extension_name| replace:: Prive Consent
+..  |composer_name| replace:: oliverkroener/ok-prive-consent
+..  |extension_version| replace:: 4.1.1

@@ -90,9 +90,8 @@ TypoScript.
     :hidden:
 
     Introduction/Index
-    Installation
+    Installation/Index
     Usage
     Configuration/Index
     Faq
-    GetHelp
     Contact/Index

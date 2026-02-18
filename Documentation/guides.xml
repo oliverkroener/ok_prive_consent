@@ -7,18 +7,18 @@
         input-format="rst"
 >
     <extension class="\T3Docs\Typo3DocsTheme\DependencyInjection\Typo3DocsThemeExtension"
-               project-home=""
-               project-contact=""
+               project-home="https://www.oliver-kroener.de"
+               project-contact="mailto:ok@oliver-kroener.de"
                project-repository="https://github.com/oliverkroener/ok-prive-consent"
                project-issues="https://github.com/oliverkroener/ok-prive-consent/issues"
                edit-on-github-branch="main"
                edit-on-github="oliverkroener/ok-prive-consent"
-               typo3-core-preferred="11.5"
+               typo3-core-preferred="stable"
                interlink-shortcode="oliverkroener/ok-prive-consent"
     />
     <project title="Prive Consent"
-             release="3.1.0"
-             version="3.1.0"
+             release="4.1.1"
+             version="4.1"
              copyright="since 2024 by Oliver Kroener &amp; Contributors"/>
     <inventory id="t3coreapi" url="https://docs.typo3.org/m/typo3/reference-coreapi/main/en-us/"/>
 </guides>

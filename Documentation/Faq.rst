@@ -77,4 +77,4 @@ Frequently Asked Questions (FAQ)
         :name: faq-help
         :header-level: 2
 
-        See chapter :ref:`help`.
+        See chapter :ref:`contact`.
