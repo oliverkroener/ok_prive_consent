@@ -97,8 +97,8 @@ class DatabaseService
 
         $cssPath = PathUtility::getPublicResourceWebPath('EXT:ok_prive_consent/Resources/Public/Css/prive-cookie-button.css');
 
-        return $script
-            . '<link rel="stylesheet" href="' . htmlspecialchars($cssPath) . '">'
-            . '<a href="#" class="prive-cookie-button" data-cc="c-settings">&nbsp;</a>';
+        return '<link rel="stylesheet" href="' . htmlspecialchars($cssPath) . '">'
+            . '<a href="#" class="prive-cookie-button" data-cc="c-settings">&nbsp;</a>'
+            . $script;
     }
 }
