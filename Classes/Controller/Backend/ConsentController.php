@@ -16,8 +16,8 @@ use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Http\RedirectResponse;
+use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
-use TYPO3\CMS\Core\Imaging\IconSize;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
@@ -91,7 +91,13 @@ class ConsentController
             ->setName('_savedok')
             ->setValue('1')
             ->setForm('PriveConsentForm')
-            ->setIcon($this->iconFactory->getIcon('actions-document-save', IconSize::SMALL))
+            ->setIcon($this->iconFactory->getIcon(
+                'actions-document-save',
+                // IconSize enum (TYPO3 13+) vs Icon::SIZE_SMALL (TYPO3 12)
+                enum_exists(\TYPO3\CMS\Core\Imaging\IconSize::class)
+                    ? \TYPO3\CMS\Core\Imaging\IconSize::SMALL
+                    : Icon::SIZE_SMALL
+            ))
             ->setTitle($languageService->sL('LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:save'))
             ->setShowLabelText(true);
         $buttonBar->addButton($saveButton, ButtonBar::BUTTON_POSITION_LEFT, 2);
