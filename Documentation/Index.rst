@@ -51,7 +51,7 @@ TypoScript.
 
     ..  card:: Installation
 
-        Install the extension via Composer and include the static TypoScript template.
+        Install the extension via Composer and add the site set to your site.
 
         ..  card-footer:: :ref:`Get started <installation>`
             :button-style: btn btn-primary

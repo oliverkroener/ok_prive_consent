@@ -19,8 +19,9 @@ Using the backend module
 ========================
 
 ..  important::
-    The backend module requires admin access. It is only available to TYPO3
-    administrators.
+    Access to the backend module is controlled per backend user and group
+    (``access: user,group``). Administrators always have access; grant the
+    *Web > Prive Consent* module to other users or groups as needed.
 
 ..  rst-class:: bignums-xxl
 
@@ -72,7 +73,7 @@ Frontend rendering
 ==================
 
 Once a script is saved and enabled, it is automatically rendered on every
-frontend page where the static TypoScript template is included:
+frontend page of a site whose ``dependencies`` include the site set:
 
 - The **consent script** is injected into ``page.footerData`` (before ``</body>``)
 - A **cookie settings button** is also rendered, allowing visitors to re-open

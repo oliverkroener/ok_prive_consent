@@ -8,8 +8,8 @@
 Configuration
 =============
 
-The extension requires minimal configuration. After including the static
-TypoScript template (see :ref:`Installation <installation-typoscript>`), the
+The extension requires minimal configuration. After adding the site set to your
+site's ``dependencies`` (see :ref:`Installation <installation-typoscript>`), the
 consent script and cookie button are rendered automatically.
 
 ..  _configuration-typoscript:
@@ -17,15 +17,16 @@ consent script and cookie button are rendered automatically.
 TypoScript setup
 ================
 
-The static TypoScript template **[kroener.DIGITAL] Prive Consent** configures:
+The site set **[kroener.DIGITAL] Prive Consent**
+(``oliverkroener/ok-prive-consent``) ships the TypoScript that configures:
 
 - ``lib.priveScript`` -- a ``USER`` object that calls
   ``DatabaseService->renderBannerScript()`` to output the consent script
 - ``page.footerData`` -- inserts the cookie button CSS, cookie button HTML, and
   consent script before ``</body>``
 
-The ``footerData`` keys use ``crc32('ok_prive_cookie_consent')`` to avoid
-collisions with other extensions.
+The ``footerData`` key ``234797283`` is derived from
+``crc32('ok_prive_cookie_consent')`` to avoid collisions with other extensions.
 
 ..  _configuration-css:
 

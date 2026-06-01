@@ -34,31 +34,33 @@ Download or upload the extension and activate it via
 
 ..  _installation-typoscript:
 
-Include the static TypoScript
-=============================
+Add the site set
+================
 
-After installation, include the static TypoScript template so the consent
-script and cookie button are rendered on the frontend:
+In TYPO3 v14 the TypoScript ships as a **site set** (set name
+``oliverkroener/ok-prive-consent``). Add it to the ``dependencies`` of each site
+that should render the consent banner so the consent script and cookie button are
+output on the frontend:
 
 ..  rst-class:: bignums-xxl
 
-1.  Open the Template module
+1.  Open your site configuration
 
-    In the TYPO3 backend, go to the :guilabel:`Template` module.
+    Edit ``config/sites/<your-site>/config.yaml`` in your project, or open
+    :guilabel:`Site Management` > :guilabel:`Sites` in the TYPO3 backend.
 
-2.  Select the root page
+2.  Add the set dependency
 
-    Select the root page of your site.
+    Add the set to the ``dependencies`` list:
 
-3.  Edit the template record
+    ..  code-block:: yaml
 
-    Choose :guilabel:`Info/Modify` and click :guilabel:`Edit the whole template record`.
+        dependencies:
+          - oliverkroener/ok-prive-consent
 
-4.  Include the static template
+    In the backend, add **[kroener.DIGITAL] Prive Consent** under the
+    :guilabel:`Sets` / :guilabel:`Dependencies` field of the site.
 
-    Switch to the :guilabel:`Includes` tab and add
-    **[kroener.DIGITAL] Prive Consent** from the list of available static templates.
+3.  Clear caches
 
-5.  Clear caches
-
-    Clear all caches to ensure the TypoScript is loaded.
+    Clear all caches to ensure the TypoScript from the set is loaded.
