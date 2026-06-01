@@ -4,32 +4,30 @@ declare(strict_types=1);
 
 namespace OliverKroener\OkPriveConsent\Service;
 
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Site\SiteFinder;
-use TYPO3\CMS\Core\Utility\PathUtility;
-use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
+use TYPO3\CMS\Core\SystemResource\Publishing\SystemResourcePublisherInterface;
+use TYPO3\CMS\Core\SystemResource\SystemResourceFactory;
 
 class DatabaseService
 {
-    private ContentObjectRenderer $cObj;
-
     public function __construct(
         private readonly SiteFinder $siteFinder,
         private readonly ConnectionPool $connectionPool,
+        private readonly SystemResourceFactory $systemResourceFactory,
+        private readonly SystemResourcePublisherInterface $resourcePublisher,
     ) {}
 
-    public function setContentObjectRenderer(ContentObjectRenderer $cObj): void
-    {
-        $this->cObj = $cObj;
-    }
-
     /**
-     * TypoScript USER function: renders the banner script for frontend output.
+     * Builds the frontend banner markup (CSS link + cookie button + Prive script)
+     * for the site the given request belongs to. Returns '' when the banner is
+     * disabled, empty, or the page/site cannot be resolved.
      */
-    public function renderBannerScript(string $content, array $conf): string
+    public function getBannerMarkup(ServerRequestInterface $request): string
     {
-        $pageId = $this->getPageId();
+        $pageId = $this->getPageId($request);
         if ($pageId === 0) {
             return '';
         }
@@ -61,7 +59,10 @@ class DatabaseService
             return '';
         }
 
-        $cssPath = PathUtility::getPublicResourceWebPath('EXT:ok_prive_consent/Resources/Public/Css/prive-cookie-button.css');
+        $cssResource = $this->systemResourceFactory->createPublicResource(
+            'EXT:ok_prive_consent/Resources/Public/Css/prive-cookie-button.css'
+        );
+        $cssPath = (string)$this->resourcePublisher->generateUri($cssResource, $request);
 
         // Order: CSS → cookie button → Prive script
         // The button must be in the DOM before Prive executes so it can bind its click handler.
@@ -70,18 +71,17 @@ class DatabaseService
             . $script;
     }
 
-    private function getPageId(): int
+    private function getPageId(ServerRequestInterface $request): int
     {
-        if (isset($this->cObj)) {
-            $routing = $this->cObj->getRequest()->getAttribute('routing');
-            if ($routing !== null && method_exists($routing, 'getPageId')) {
-                return $routing->getPageId();
-            }
+        // Canonical page ID in TYPO3 v14 frontend rendering.
+        $pageInformation = $request->getAttribute('frontend.page.information');
+        if ($pageInformation !== null) {
+            return (int)$pageInformation->getId();
         }
 
-        // Fallback: use TSFE page ID (works reliably in footerData context)
-        if (isset($GLOBALS['TSFE']->id)) {
-            return (int)$GLOBALS['TSFE']->id;
+        $routing = $request->getAttribute('routing');
+        if ($routing !== null && method_exists($routing, 'getPageId')) {
+            return (int)$routing->getPageId();
         }
 
         return 0;

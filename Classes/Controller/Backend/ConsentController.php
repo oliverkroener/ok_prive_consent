@@ -9,6 +9,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Template\Components\ButtonBar;
+use TYPO3\CMS\Backend\Template\Components\ComponentFactory;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
@@ -16,8 +17,8 @@ use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Http\RedirectResponse;
-use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
+use TYPO3\CMS\Core\Imaging\IconSize;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
@@ -37,6 +38,7 @@ class ConsentController
         private readonly UriBuilder $uriBuilder,
         private readonly PageRenderer $pageRenderer,
         private readonly IconFactory $iconFactory,
+        private readonly ComponentFactory $componentFactory,
     ) {}
 
     public function indexAction(ServerRequestInterface $request): ResponseInterface
@@ -57,7 +59,7 @@ class ConsentController
         $view->setTitle($moduleTitle, $pageInfo['title'] ?? '');
 
         if ($pageInfo !== []) {
-            $view->getDocHeaderComponent()->setMetaInformation($pageInfo);
+            $view->getDocHeaderComponent()->setPageBreadcrumb($pageInfo);
         }
 
         if ($id === 0) {
@@ -87,17 +89,11 @@ class ConsentController
 
         // Add save button to DocHeader
         $buttonBar = $view->getDocHeaderComponent()->getButtonBar();
-        $saveButton = $buttonBar->makeInputButton()
+        $saveButton = $this->componentFactory->createInputButton()
             ->setName('_savedok')
             ->setValue('1')
             ->setForm('PriveConsentForm')
-            ->setIcon($this->iconFactory->getIcon(
-                'actions-document-save',
-                // IconSize enum (TYPO3 13+) vs Icon::SIZE_SMALL (TYPO3 12)
-                enum_exists(\TYPO3\CMS\Core\Imaging\IconSize::class)
-                    ? \TYPO3\CMS\Core\Imaging\IconSize::SMALL
-                    : Icon::SIZE_SMALL
-            ))
+            ->setIcon($this->iconFactory->getIcon('actions-document-save', IconSize::SMALL))
             ->setTitle($languageService->sL('LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:save'))
             ->setShowLabelText(true);
         $buttonBar->addButton($saveButton, ButtonBar::BUTTON_POSITION_LEFT, 2);
