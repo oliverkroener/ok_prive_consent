@@ -8,25 +8,26 @@
 Configuration
 =============
 
-The extension requires minimal configuration. After adding the site set to your
-site's ``dependencies`` (see :ref:`Installation <installation-typoscript>`), the
-consent script and cookie button are rendered automatically.
+The extension requires no configuration. Once it is installed, the consent
+script and cookie button are rendered automatically on every frontend page.
 
-..  _configuration-typoscript:
+..  _configuration-frontend-rendering:
 
-TypoScript setup
-================
+Frontend rendering
+==================
 
-The site set **[kroener.DIGITAL] Prive Consent**
-(``oliverkroener/ok-prive-consent``) ships the TypoScript that configures:
+Rendering is handled by the PSR-14 event listener
+``OliverKroener\OkPriveConsent\EventListener\InjectBannerScript``, registered
+through the extension's ``Services.yaml`` via the ``#[AsEventListener]``
+attribute. It listens on
+``\TYPO3\CMS\Frontend\Event\AfterCacheableContentIsGeneratedEvent`` and splices
+the cookie button CSS, cookie button HTML, and consent script in before the
+closing ``</body>`` tag.
 
-- ``lib.priveScript`` -- a ``USER`` object that calls
-  ``DatabaseService->renderBannerScript()`` to output the consent script
-- ``page.footerData`` -- inserts the cookie button CSS, cookie button HTML, and
-  consent script before ``</body>``
-
-The ``footerData`` key ``234797283`` is derived from
-``crc32('ok_prive_cookie_consent')`` to avoid collisions with other extensions.
+There is **no** TypoScript, site set, or Fluid template to configure. Injecting
+via an event listener keeps rendering independent of site-set load order -- a
+theme set re-declaring ``page = PAGE`` can no longer discard the banner -- and
+the markup becomes part of the cacheable page content.
 
 ..  _configuration-css:
 

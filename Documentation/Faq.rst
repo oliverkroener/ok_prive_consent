@@ -42,10 +42,9 @@ Frequently Asked Questions (FAQ)
         :name: faq-typoscript
         :header-level: 2
 
-        No. After adding the site set **[kroener.DIGITAL] Prive Consent**
-        (``oliverkroener/ok-prive-consent``) to your site's ``dependencies``, the
-        consent script and cookie button are rendered automatically on all
-        frontend pages. No additional TypoScript or template changes are needed.
+        No. The consent script and cookie button are injected automatically on
+        all frontend pages by a PSR-14 event listener as soon as the extension
+        is installed. No site set, TypoScript, or template changes are needed.
 
     ..  accordion-item:: Can I use different consent scripts per site?
         :name: faq-multi-site

@@ -15,7 +15,8 @@ can edit, enable, and deploy consent scripts directly from the TYPO3 backend
 without needing file system access or a deployment pipeline.
 
 The consent script and a floating cookie settings button are rendered
-automatically on all frontend pages via TypoScript.
+automatically on all frontend pages by a PSR-14 event listener -- no TypoScript
+or template changes are required.
 
 Features
 ========
@@ -28,7 +29,8 @@ Features
 -  **Unsaved changes protection** -- warns before navigating away with unsaved
    modifications, with a "save and close" option
 -  **Automatic frontend rendering** -- script and cookie settings button injected
-   via TypoScript ``page.footerData``
+   before ``</body>`` by a PSR-14 event listener (no TypoScript or template changes
+   required)
 -  **Cache flush on save** -- frontend page cache is cleared automatically after
    saving
 -  **Cookie settings button** -- fixed-position floating button with SVG cookie

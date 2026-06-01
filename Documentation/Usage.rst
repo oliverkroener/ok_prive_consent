@@ -20,7 +20,7 @@ Using the backend module
 
 ..  important::
     Access to the backend module is controlled per backend user and group
-    (``access: user,group``). Administrators always have access; grant the
+    (``access: user``). Administrators always have access; grant the
     *Web > Prive Consent* module to other users or groups as needed.
 
 ..  rst-class:: bignums-xxl
@@ -73,13 +73,13 @@ Frontend rendering
 ==================
 
 Once a script is saved and enabled, it is automatically rendered on every
-frontend page of a site whose ``dependencies`` include the site set:
+frontend page of the site:
 
-- The **consent script** is injected into ``page.footerData`` (before ``</body>``)
+- The **consent script** is injected before ``</body>`` by a PSR-14 event listener
 - A **cookie settings button** is also rendered, allowing visitors to re-open
   the consent dialog at any time
 
-No additional TypoScript or Fluid template changes are required.
+No site set, TypoScript, or Fluid template changes are required.
 
 ..  _usage-how-it-works:
 
@@ -91,10 +91,11 @@ The extension stores the consent script and an enable flag in custom fields
 ``tx_ok_prive_cookie_consent_banner_enabled``) on the ``sys_template`` record
 of the site root page.
 
-On frontend rendering, a TypoScript ``USER`` object calls
-``DatabaseService->renderBannerScript()`` to output the script and the cookie
-settings button in the page footer. The script is only rendered when the
-enable flag is set.
+On frontend rendering, the PSR-14 event listener
+``InjectBannerScript`` (listening on ``AfterCacheableContentIsGeneratedEvent``)
+calls ``DatabaseService->getBannerMarkup()`` and splices the resulting script and
+cookie settings button in before ``</body>``. The markup is only produced when the
+enable flag is set, and it becomes part of the cacheable page content.
 
 ..  code-block:: text
 
@@ -103,12 +104,12 @@ enable flag is set.
          v                          |
     ConsentController               |
          |                          |
-         v                          |
-    DatabaseService ---- sys_template -----> TypoScript USER object
-      (save/load)        (storage)           (renderBannerScript)
+         v                          v
+    DatabaseService ---- sys_template -----> InjectBannerScript (event listener)
+      (save/load)        (storage)           (getBannerMarkup)
                                                   |
                                                   v
-                                             page.footerData
+                                          inject before </body>
 
 ..  _usage-multi-site:
 

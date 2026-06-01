@@ -34,33 +34,20 @@ Download or upload the extension and activate it via
 
 ..  _installation-typoscript:
 
-Add the site set
-================
+No further setup required
+=========================
 
-In TYPO3 v14 the TypoScript ships as a **site set** (set name
-``oliverkroener/ok-prive-consent``). Add it to the ``dependencies`` of each site
-that should render the consent banner so the consent script and cookie button are
-output on the frontend:
+There is nothing more to configure. The consent banner is injected on the
+frontend by a PSR-14 event listener that is registered automatically when the
+extension is installed -- no TypoScript, site set, or Fluid template change is
+needed.
 
-..  rst-class:: bignums-xxl
+..  note::
+    A site set named ``oliverkroener/ok-prive-consent`` is still shipped so that
+    existing site configurations referencing it under ``dependencies`` keep
+    working. It is now a no-op and entirely optional -- you may leave it or
+    remove the dependency.
 
-1.  Open your site configuration
-
-    Edit ``config/sites/<your-site>/config.yaml`` in your project, or open
-    :guilabel:`Site Management` > :guilabel:`Sites` in the TYPO3 backend.
-
-2.  Add the set dependency
-
-    Add the set to the ``dependencies`` list:
-
-    ..  code-block:: yaml
-
-        dependencies:
-          - oliverkroener/ok-prive-consent
-
-    In the backend, add **[kroener.DIGITAL] Prive Consent** under the
-    :guilabel:`Sets` / :guilabel:`Dependencies` field of the site.
-
-3.  Clear caches
-
-    Clear all caches to ensure the TypoScript from the set is loaded.
+After installing the extension, clear all caches and open
+:guilabel:`Web` > :guilabel:`Prive Consent` to add your script (see
+:ref:`Usage <usage>`).
