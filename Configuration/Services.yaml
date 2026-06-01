@@ -6,7 +6,3 @@ services:
 
   OliverKroener\OkPriveConsent\:
     resource: '../Classes/*'
-
-  # Public: required for TypoScript USER function calls
-  OliverKroener\OkPriveConsent\Service\DatabaseService:
-    public: true

@@ -6,7 +6,7 @@ return [
     'web_okpriveconsent' => [
         'parent' => 'web',
         'position' => ['after' => 'web_info'],
-        'access' => 'user,group',
+        'access' => 'user',
         'path' => '/module/web/prive-consent',
         'iconIdentifier' => 'module-prive-consent',
         'labels' => 'LLL:EXT:ok_prive_consent/Resources/Private/Language/locallang.xlf',
