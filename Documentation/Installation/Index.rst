@@ -32,33 +32,60 @@ Install via Extension Manager
 Download or upload the extension and activate it via
 :guilabel:`Admin Tools` > :guilabel:`Extensions`.
 
-..  _installation-typoscript:
+..  _installation-setup:
 
-Include the static TypoScript
-=============================
+After the installation
+======================
 
-After installation, include the static TypoScript template so the consent
-script and cookie button are rendered on the frontend:
+No TypoScript needs to be included and no site set needs to be added -- the
+consent script and cookie button are injected by a PSR-14 event listener that is
+registered through the extension's ``Services.yaml``.
 
 ..  rst-class:: bignums-xxl
 
-1.  Open the Template module
+1.  Update the database
 
-    In the TYPO3 backend, go to the :guilabel:`Template` module.
+    Go to :guilabel:`Admin Tools` > :guilabel:`Maintenance` >
+    :guilabel:`Analyze Database Structure` and apply the suggested changes. This
+    adds the two consent fields to the ``pages`` table.
 
-2.  Select the root page
+2.  Clear caches
 
-    Select the root page of your site.
+    Clear all caches so the event listener is picked up.
 
-3.  Edit the template record
+3.  Optional: add the site set (TYPO3 13.1+)
 
-    Choose :guilabel:`Info/Modify` and click :guilabel:`Edit the whole template record`.
+    In :guilabel:`Site Management` > :guilabel:`Sites` you may add the set
+    :guilabel:`[kroener.DIGITAL] Prive Consent`. The set is empty and optional --
+    see :ref:`Site set <configuration-site-set>`.
 
-4.  Include the static template
+..  _installation-upgrade:
 
-    Switch to the :guilabel:`Includes` tab and add
-    **[kroener.DIGITAL] Prive Consent** from the list of available static templates.
+Upgrading from version 4.1.1 or older
+=====================================
 
-5.  Clear caches
+Up to version 4.1.1 the banner settings were stored on the ``sys_template``
+record of the site root. Since version 4.2.0 they live on the ``pages`` record
+of the site root, so that sites driven purely by site sets -- which have no
+``sys_template`` record at all -- keep working.
 
-    Clear all caches to ensure the TypoScript is loaded.
+..  rst-class:: bignums-xxl
+
+1.  Analyze the database structure
+
+    :guilabel:`Admin Tools` > :guilabel:`Maintenance` >
+    :guilabel:`Analyze Database Structure`.
+
+2.  Run the upgrade wizard
+
+    In :guilabel:`Admin Tools` > :guilabel:`Upgrade` >
+    :guilabel:`Upgrade Wizard`, run
+    :guilabel:`EXT:ok_prive_consent: Move consent banner settings from sys_template to pages`.
+    It copies the existing script and enable flag to the site root page. Running
+    it twice is harmless.
+
+3.  Optional: clean up the TypoScript record
+
+    The static template **[kroener.DIGITAL] Prive Consent** is empty now. It is
+    still shipped so existing includes do not break, but it can be removed from
+    the :guilabel:`Includes` tab of your template record.

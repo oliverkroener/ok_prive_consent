@@ -7,6 +7,9 @@ services:
   OliverKroener\OkPriveConsent\:
     resource: '../Classes/*'
 
-  # Public: required for TypoScript USER function calls
-  OliverKroener\OkPriveConsent\Service\DatabaseService:
-    public: true
+  # Registered via YAML tag: the #[AsEventListener] attribute requires TYPO3 13
+  OliverKroener\OkPriveConsent\EventListener\InjectBannerScript:
+    tags:
+      - name: event.listener
+        identifier: 'ok-prive-consent/inject-banner-script'
+        event: TYPO3\CMS\Frontend\Event\AfterCacheableContentIsGeneratedEvent

@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!-- See  https://docs.typo3.org/permalink/h2document:guides-xml for documentation on this file-->
 <guides xmlns="https://www.phpdoc.org/guides" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="https://www.phpdoc.org/guides ../vendor/phpdocumentor/guides-cli/resources/schema/guides.xsd"
@@ -7,18 +6,19 @@
         input-format="rst"
 >
     <extension class="\T3Docs\Typo3DocsTheme\DependencyInjection\Typo3DocsThemeExtension"
-               project-home="https://www.oliver-kroener.de"
-               project-contact="mailto:ok@oliver-kroener.de"
-               project-repository="https://github.com/oliverkroener/ok-prive-consent"
-               project-issues="https://github.com/oliverkroener/ok-prive-consent/issues"
-               edit-on-github-branch="main"
-               edit-on-github="oliverkroener/ok-prive-consent"
-               typo3-core-preferred="stable"
+               project-home="https://extensions.typo3.org/extension/ok_prive_consent"
+               project-contact="https://github.com/oliverkroener/ok_prive_consent/discussions"
+               project-repository="https://github.com/oliverkroener/ok_prive_consent"
+               project-issues="https://github.com/oliverkroener/ok_prive_consent/issues"
+               project-discussions="https://github.com/oliverkroener/ok_prive_consent/discussions"
+               edit-on-github-branch="feature/typo3-12-13"
+               edit-on-github="oliverkroener/ok_prive_consent"
+               typo3-core-preferred="13.4"
                interlink-shortcode="oliverkroener/ok-prive-consent"
     />
     <project title="Prive Consent"
-             release="4.1.1"
-             version="4.1"
+             release="4.2.0"
+             version="4.2"
              copyright="since 2024 by Oliver Kroener &amp; Contributors"/>
     <inventory id="t3coreapi" url="https://docs.typo3.org/m/typo3/reference-coreapi/main/en-us/"/>
 </guides>

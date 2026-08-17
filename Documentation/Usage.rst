@@ -72,13 +72,14 @@ Frontend rendering
 ==================
 
 Once a script is saved and enabled, it is automatically rendered on every
-frontend page where the static TypoScript template is included:
+frontend page of that site:
 
-- The **consent script** is injected into ``page.footerData`` (before ``</body>``)
+- The **consent script** is injected immediately before the closing ``</body>``
+  tag
 - A **cookie settings button** is also rendered, allowing visitors to re-open
   the consent dialog at any time
 
-No additional TypoScript or Fluid template changes are required.
+No TypoScript, site set or Fluid template changes are required.
 
 ..  _usage-how-it-works:
 
@@ -87,27 +88,37 @@ How it works
 
 The extension stores the consent script and an enable flag in custom fields
 (``tx_ok_prive_cookie_consent_banner_script`` and
-``tx_ok_prive_cookie_consent_banner_enabled``) on the ``sys_template`` record
-of the site root page.
+``tx_ok_prive_cookie_consent_banner_enabled``) on the ``pages`` record of the
+site root page.
 
-On frontend rendering, a TypoScript ``USER`` object calls
-``DatabaseService->renderBannerScript()`` to output the script and the cookie
-settings button in the page footer. The script is only rendered when the
-enable flag is set.
+..  note::
+    Up to version 4.1.1 these fields lived on the ``sys_template`` record of the
+    site root. They moved to ``pages`` in version 4.2.0 so that sites configured
+    entirely with site sets -- which have no ``sys_template`` record -- keep
+    working. See :ref:`Upgrading <installation-upgrade>`.
+
+On frontend rendering, the PSR-14 event listener ``InjectBannerScript`` reacts to
+``AfterCacheableContentIsGeneratedEvent``, asks
+``DatabaseService->getBannerMarkup()`` for the markup and splices it in before
+``</body>``. Nothing is rendered when the enable flag is unset or the script is
+empty.
 
 ..  code-block:: text
 
     TYPO3 Backend               Frontend
          |                          |
-         v                          |
-    ConsentController               |
-         |                          |
-         v                          |
-    DatabaseService ---- sys_template -----> TypoScript USER object
-      (save/load)        (storage)           (renderBannerScript)
-                                                  |
-                                                  v
-                                             page.footerData
+         v                          v
+    ConsentController          InjectBannerScript
+         |                          |  (AfterCacheableContentIsGeneratedEvent)
+         |                          v
+         |                     DatabaseService
+         |                          |  (getBannerMarkup)
+         v                          v
+        pages record  <---------  pages record
+      (site root, storage)      (site root, storage)
+                                    |
+                                    v
+                             markup before </body>
 
 ..  _usage-multi-site:
 

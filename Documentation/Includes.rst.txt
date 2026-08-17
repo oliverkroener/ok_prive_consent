@@ -3,4 +3,6 @@
 ..  |extension_key| replace:: ok_prive_consent
 ..  |extension_name| replace:: Prive Consent
 ..  |composer_name| replace:: oliverkroener/ok-prive-consent
-..  |extension_version| replace:: 4.1.1
+
+..  Note: do not add a version substitution here. The version is defined once in
+..  guides.xml (release/version) and is available in any document as |release|.

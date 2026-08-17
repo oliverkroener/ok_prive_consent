@@ -1,0 +1,20 @@
+# =============================================================================
+# Site Set: [kroener.DIGITAL] Prive Consent
+# =============================================================================
+# Site sets require TYPO3 13.1 or newer. On TYPO3 12 this directory is ignored
+# by the core and has no effect — the banner works there just the same.
+#
+# The cookie-consent banner is injected into the page footer by the PHP
+# PSR-14 event listener
+# OliverKroener\OkPriveConsent\EventListener\InjectBannerScript
+# (listening on AfterCacheableContentIsGeneratedEvent), NOT via TypoScript.
+#
+# This avoids the site-set load-order pitfall: a theme set that re-declares
+# `page = PAGE` after this set would otherwise discard a `page.footerData`
+# assignment made here.
+#
+# This set is intentionally (almost) empty. It only exists so a site's
+# config.yaml can reference `oliverkroener/ok-prive-consent` under
+# `dependencies:`. The banner works even without referencing the set, because
+# the event listener is registered through the extension's Services.yaml.
+# =============================================================================

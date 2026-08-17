@@ -32,8 +32,8 @@ Prive Consent
 
 TYPO3 backend module for managing `Prive Cookie Consent <https://www.prive.eu/>`__
 banner scripts. Administrators edit JavaScript snippets in the TYPO3 backend; the
-scripts are stored in the ``sys_template`` table and rendered on the frontend via
-TypoScript.
+scripts are stored on the site root page and injected into the frontend by a
+PSR-14 event listener.
 
 ..  card-grid::
     :columns: 1
@@ -44,6 +44,9 @@ TypoScript.
 
     ..  card:: Introduction
 
+        ..  card-image:: /Images/Icons/introduction.svg
+            :alt: Open book icon
+
         Learn what this extension does, its features, and system requirements.
 
         ..  card-footer:: :ref:`Learn more <introduction>`
@@ -51,12 +54,18 @@ TypoScript.
 
     ..  card:: Installation
 
-        Install the extension via Composer and include the static TypoScript template.
+        ..  card-image:: /Images/Icons/installation.svg
+            :alt: Download arrow icon
+
+        Install the extension via Composer, update the database and upgrade from 4.1.x.
 
         ..  card-footer:: :ref:`Get started <installation>`
             :button-style: btn btn-primary
 
     ..  card:: Usage
+
+        ..  card-image:: /Images/Icons/usage.svg
+            :alt: Backend module window icon
 
         Manage Prive consent scripts using the dedicated backend module.
 
@@ -65,12 +74,18 @@ TypoScript.
 
     ..  card:: Configuration
 
-        Customise the cookie button appearance and override CSS.
+        ..  card-image:: /Images/Icons/configuration.svg
+            :alt: Settings sliders icon
+
+        Frontend rendering, the site set, and customising the cookie button.
 
         ..  card-footer:: :ref:`Configure <configuration>`
             :button-style: btn btn-primary
 
     ..  card:: FAQ
+
+        ..  card-image:: /Images/Icons/faq.svg
+            :alt: Question mark icon
 
         Common questions about setup and usage.
 
@@ -78,6 +93,9 @@ TypoScript.
             :button-style: btn btn-primary
 
     ..  card:: Contact
+
+        ..  card-image:: /Images/Icons/contact.svg
+            :alt: Envelope icon
 
         Get in touch with the author for support, questions, or contributions.
 

@@ -1,16 +1,19 @@
-# Define a USER object to fetch and render the banner script using a custom PHP function
-lib.priveScript = USER
-lib.priveScript {
-    userFunc = OliverKroener\OkPriveConsent\Service\DatabaseService->renderBannerScript
-    stdWrap.trim = 1
-}
-
-page {
-    # Insert banner script, cookie button CSS and button before </body>
-    # Key 234797283 derived from crc32('ok_prive_cookie_consent') to avoid collisions
-    footerData.234797283 = USER
-    footerData.234797283 {
-        userFunc = OliverKroener\OkPriveConsent\Service\DatabaseService->renderBannerScript
-        stdWrap.trim = 1
-    }
-}   
+# =============================================================================
+# Static template: [kroener.DIGITAL] Prive Consent
+# =============================================================================
+# This template is intentionally empty since version 4.2.0.
+#
+# The cookie-consent banner (CSS link, cookie button and consent script) is
+# injected into the page footer by the PHP PSR-14 event listener
+# OliverKroener\OkPriveConsent\EventListener\InjectBannerScript
+# (listening on AfterCacheableContentIsGeneratedEvent), NOT via TypoScript.
+#
+# The former `lib.priveScript` USER object and the
+# `page.footerData.234797283` assignment were removed: rendering in PHP keeps
+# the banner independent of TypoScript and site-set load order — a theme
+# re-declaring `page = PAGE` can no longer discard the banner.
+#
+# The static template itself is kept so that existing TypoScript records which
+# include it do not end up with a dangling reference. Including it is optional
+# and has no effect.
+# =============================================================================
