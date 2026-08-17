@@ -3,19 +3,20 @@
 [![TYPO3 14](https://img.shields.io/badge/TYPO3-14-orange?logo=typo3)](https://get.typo3.org/version/14)
 [![PHP 8.2+](https://img.shields.io/badge/PHP-8.2%2B-777BB4?logo=php&logoColor=white)](https://www.php.net/)
 [![License: GPL v2+](https://img.shields.io/badge/License-GPL%20v2%2B-blue)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
-[![Version](https://img.shields.io/badge/version-5.0.0-green)](https://github.com/oliverkroener/ok-prive-consent)
+[![Version](https://img.shields.io/badge/version-5.0.1-green)](https://github.com/oliverkroener/ok_prive_consent)
 
 TYPO3 backend module for managing [Prive Cookie Consent](https://www.prive.eu/) banner scripts.
 
 ## Features
 
-- **Backend module** under *Web > Prive Consent* for editing consent scripts
+- **Backend module** under *Web > Prive* for editing consent scripts (access controlled per backend user/group)
 - **Enable/disable toggle** to activate or deactivate the banner without removing the script
 - **Multi-site support** -- automatically resolves the correct site root per TYPO3 site configuration
 - **Unsaved changes protection** -- warns before navigating away with unsaved modifications (with "save and close" support)
 - **Automatic frontend rendering** -- script and cookie settings button injected before `</body>` by a PSR-14 event listener (no TypoScript or template changes required)
 - **Cache flush on save** -- frontend page cache is cleared automatically after saving
 - **Cookie settings button** -- fixed-position floating button with SVG cookie icon for visitors to reopen consent dialog
+- **Upgrade wizard** -- migrates settings stored on `sys_template` by earlier versions onto the site root `pages` record
 
 ## Requirements
 
@@ -42,11 +43,17 @@ installed -- it is injected by a PSR-14 event listener registered through the ex
 
 A site set named `oliverkroener/ok-prive-consent` is still shipped (so existing site
 configurations that reference it under `dependencies` keep working), but it is now a
-no-op and entirely optional.
+no-op and entirely optional. In the backend it appears under *Site Management > Sites*
+as **[kroener.DIGITAL] Prive Consent**.
+
+The set is empty in every respect -- `dependencies: []`, a comments-only
+`setup.typoscript`, and no `settings.definitions.yaml`. You may keep the dependency or
+delete it from your site's `config.yaml`; the banner renders either way, because the
+event listener is registered through `Services.yaml` rather than through the set.
 
 ## Usage
 
-1. Navigate to **Web > Prive Consent** in the TYPO3 backend
+1. Navigate to **Web > Prive** in the TYPO3 backend (the module header reads *Prive Settings*)
 2. Select a page in the page tree (the module resolves the site root automatically)
 3. Toggle **Enable Prive script** to activate/deactivate the banner
 4. Paste the JavaScript snippet from your [Prive](https://www.prive.eu/) dashboard
@@ -83,6 +90,7 @@ Frontend --> AfterCacheableContentIsGeneratedEvent
 | `ConsentController` | `Classes/Controller/Backend/` | PSR-7 controller (`#[AsController]`) with `indexAction` and `saveAction` |
 | `InjectBannerScript` | `Classes/EventListener/` | PSR-14 listener on `AfterCacheableContentIsGeneratedEvent`; splices the banner markup before `</body>` |
 | `DatabaseService` | `Classes/Service/` | Resolves the site and builds the banner markup via `getBannerMarkup(ServerRequestInterface)` |
+| `MigrateConsentStorageToPagesUpgradeWizard` | `Classes/Upgrades/` | `#[UpgradeWizard('okPriveConsentMigrateStorageToPages')]`; copies `sys_template` values onto the site root page |
 | Module registration | `Configuration/Backend/Modules.php` | Declarative backend module under Web menu with page tree navigation |
 | Icon registration | `Configuration/Icons.php` | SVG module icon via `SvgIconProvider` |
 | JavaScript modules | `Configuration/JavaScriptModules.php` | ES6 module mapping for `@oliverkroener/ok-prive-consent/` |
@@ -91,6 +99,39 @@ Frontend --> AfterCacheableContentIsGeneratedEvent
 | Fluid templates | `Resources/Private/Templates/Backend/Consent/` | `Index.html` -- form with three states (no page, no site, edit) |
 | FormDirtyCheck | `Resources/Public/JavaScript/backend/` | ES6 module for unsaved changes detection with ConsumerScope integration |
 | Localisation | `Resources/Private/Language/` | English (`locallang.xlf`) and German (`de.locallang.xlf`) |
+
+### File structure
+
+```
+ok_prive_consent/
+├── Classes/
+│   ├── Controller/Backend/ConsentController.php     # PSR-7 backend controller
+│   ├── EventListener/InjectBannerScript.php         # PSR-14 frontend injection
+│   ├── Service/DatabaseService.php                  # banner markup builder
+│   └── Upgrades/
+│       └── MigrateConsentStorageToPagesUpgradeWizard.php
+├── Configuration/
+│   ├── Backend/Modules.php                          # module + routes
+│   ├── Icons.php                                    # module icon
+│   ├── JavaScriptModules.php                        # ES6 import map
+│   ├── Services.yaml                                # DI (autowire/autoconfigure)
+│   └── Sets/OkPriveConsent/                         # no-op site set
+│       ├── config.yaml
+│       └── setup.typoscript
+├── Documentation/                                   # this manual (reST)
+├── Resources/
+│   ├── Private/
+│   │   ├── Language/{locallang,de.locallang}.xlf    # EN + DE labels
+│   │   └── Templates/Backend/Consent/Index.html
+│   └── Public/
+│       ├── Css/prive-cookie-button.css
+│       ├── Icons/{Extension.png,module-icon.svg}
+│       └── JavaScript/backend/form-dirty-check.js
+├── composer.json
+├── ext_emconf.php
+├── ext_icon.png
+└── ext_tables.sql                                   # pages columns
+```
 
 ### Database fields (on `pages`)
 

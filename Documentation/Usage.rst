@@ -21,13 +21,14 @@ Using the backend module
 ..  important::
     Access to the backend module is controlled per backend user and group
     (``access: user``). Administrators always have access; grant the
-    *Web > Prive Consent* module to other users or groups as needed.
+    *Web > Prive* module to other users or groups as needed.
 
 ..  rst-class:: bignums-xxl
 
 1.  Open the module
 
-    In the TYPO3 backend, navigate to :guilabel:`Web` > :guilabel:`Prive Consent`.
+    In the TYPO3 backend, navigate to :guilabel:`Web` > :guilabel:`Prive`. The
+    module opens with the header :guilabel:`Prive Settings`.
 
 2.  Select a page in the page tree
 

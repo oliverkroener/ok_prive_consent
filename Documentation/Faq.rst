@@ -25,13 +25,13 @@ Frequently Asked Questions (FAQ)
         You need a `Prive <https://www.prive.eu/>`__ account. After configuring
         your consent banner in the Prive dashboard, copy the JavaScript snippet
         and paste it into the TYPO3 backend module at
-        :guilabel:`Web` > :guilabel:`Prive Consent`.
+        :guilabel:`Web` > :guilabel:`Prive`.
 
     ..  accordion-item:: Where do I manage the consent script in TYPO3?
         :name: faq-backend-module
         :header-level: 2
 
-        Navigate to :guilabel:`Web` > :guilabel:`Prive Consent` in the TYPO3
+        Navigate to :guilabel:`Web` > :guilabel:`Prive` in the TYPO3
         backend. Select a page in the page tree -- the module automatically
         resolves the site root. From there you can edit the script, enable or
         disable the consent banner, and save.
@@ -45,6 +45,22 @@ Frequently Asked Questions (FAQ)
         No. The consent script and cookie button are injected automatically on
         all frontend pages by a PSR-14 event listener as soon as the extension
         is installed. No site set, TypoScript, or template changes are needed.
+
+    ..  accordion-item:: Do I have to add the site set to my site configuration?
+        :name: faq-site-set
+        :header-level: 2
+
+        No. The extension ships a site set called
+        ``oliverkroener/ok-prive-consent`` (shown in the backend as
+        *[kroener.DIGITAL] Prive Consent*), but it is empty and optional. The
+        banner is injected by a PSR-14 event listener that is registered
+        through the extension's ``Services.yaml``, so it works whether or not
+        the set is referenced.
+
+        If your site's ``config.yaml`` already lists the set under
+        ``dependencies``, you may keep it or remove it.
+
+        See chapter :ref:`configuration-site-set`.
 
     ..  accordion-item:: Can I use different consent scripts per site?
         :name: faq-multi-site

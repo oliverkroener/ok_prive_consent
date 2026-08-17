@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 120" width="640" height="120" role="img" aria-hidden="true" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M320 40C305 30 285 27 268 31v57c17-4 37-1 52 9 15-10 35-13 52-9V31c-17-4-37-1-52 9Z" stroke="#f05722" stroke-width="5"/>
+    <path d="M320 40v57" stroke="#0fa8dd" stroke-width="5"/>
+    <path d="M284 48h20M284 62h20M336 48h20M336 62h20" stroke="#0fa8dd" stroke-width="4"/>
+</svg>

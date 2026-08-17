@@ -30,14 +30,14 @@ Support
 If you encounter issues or have questions about this extension:
 
 -  **Bug reports & feature requests:** Use the
-   `GitHub issue tracker <https://github.com/oliverkroener/ok-prive-consent/issues>`__
+   `GitHub issue tracker <https://github.com/oliverkroener/ok_prive_consent/issues>`__
 -  **Email:** `ok@oliver-kroener.de <mailto:ok@oliver-kroener.de>`__
 
 Contributing
 ============
 
 Contributions are welcome. Please open a pull request or issue on
-`GitHub <https://github.com/oliverkroener/ok-prive-consent>`__.
+`GitHub <https://github.com/oliverkroener/ok_prive_consent>`__.
 
 License
 =======

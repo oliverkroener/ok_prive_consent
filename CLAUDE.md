@@ -11,7 +11,7 @@ TYPO3 CMS extension (`ok_prive_consent`) providing a backend module for managing
 - **PHP namespace:** `OliverKroener\OkPriveConsent\`
 - **Extension key:** `ok_prive_consent`
 - **Composer package:** `oliverkroener/ok-prive-consent`
-- **Version:** 5.0.0
+- **Version:** 5.0.1
 - **External dependencies:** `typo3/cms-core` (`^14.3`), `typo3/cms-backend` (`^14.3`)
 
 ## Build Commands

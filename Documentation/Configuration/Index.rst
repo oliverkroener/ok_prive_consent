@@ -29,6 +29,62 @@ via an event listener keeps rendering independent of site-set load order -- a
 theme set re-declaring ``page = PAGE`` can no longer discard the banner -- and
 the markup becomes part of the cacheable page content.
 
+..  _configuration-site-set:
+
+Site set
+========
+
+The extension ships a site set in ``Configuration/Sets/OkPriveConsent/``:
+
+..  code-block:: yaml
+    :caption: EXT:ok_prive_consent/Configuration/Sets/OkPriveConsent/config.yaml
+
+    name: oliverkroener/ok-prive-consent
+    label: '[kroener.DIGITAL] Prive Consent'
+    dependencies: []
+
+In the backend it is listed under :guilabel:`Site Management` >
+:guilabel:`Sites` as :guilabel:`[kroener.DIGITAL] Prive Consent`.
+
+..  important::
+    The set is intentionally empty and **not required** for the banner to work:
+
+    -  ``dependencies`` is an empty list -- it pulls in no other set.
+    -  ``setup.typoscript`` contains comments only -- it defines no TypoScript.
+    -  There is no ``settings.definitions.yaml`` -- the set exposes no settings.
+
+    It is shipped solely so that site configurations written for earlier
+    versions, which list ``oliverkroener/ok-prive-consent`` under
+    ``dependencies``, keep resolving instead of referencing a set that no
+    longer exists.
+
+..  _configuration-site-set-keep-or-remove:
+
+Keeping or removing the dependency
+----------------------------------
+
+Both are valid — pick either:
+
+Keep it
+    The set is a no-op, so an existing dependency entry is harmless.
+
+Remove it
+    Delete the ``oliverkroener/ok-prive-consent`` line from ``dependencies`` in
+    your site's ``config.yaml``. The banner keeps rendering, because
+    ``InjectBannerScript`` is registered through the extension's
+    ``Services.yaml`` — not through the set.
+
+..  code-block:: yaml
+    :caption: config/sites/<identifier>/config.yaml — the set reference is optional
+
+    rootPageId: 1
+    base: 'https://example.org/'
+    dependencies:
+      - oliverkroener/ok-prive-consent
+
+See :ref:`site sets <t3coreapi:site-sets>` in the TYPO3 Core API reference for
+general information on site sets.
+
 ..  _configuration-css:
 
 Cookie button styling

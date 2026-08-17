@@ -21,7 +21,7 @@ or template changes are required.
 Features
 ========
 
--  **Backend module** under *Web > Prive Consent* for editing consent scripts
+-  **Backend module** under *Web > Prive* for editing consent scripts
 -  **Enable/disable toggle** to activate or deactivate the banner without
    removing the script
 -  **Multi-site support** -- automatically resolves the correct site root per
@@ -35,6 +35,8 @@ Features
    saving
 -  **Cookie settings button** -- fixed-position floating button with SVG cookie
    icon allowing visitors to reopen the consent dialog at any time
+-  **Upgrade wizard** -- migrates settings stored on ``sys_template`` by earlier
+   versions onto the site root ``pages`` record
 
 Requirements
 ============

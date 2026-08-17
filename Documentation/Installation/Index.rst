@@ -43,11 +43,13 @@ extension is installed -- no TypoScript, site set, or Fluid template change is
 needed.
 
 ..  note::
-    A site set named ``oliverkroener/ok-prive-consent`` is still shipped so that
-    existing site configurations referencing it under ``dependencies`` keep
-    working. It is now a no-op and entirely optional -- you may leave it or
-    remove the dependency.
+    A site set named ``oliverkroener/ok-prive-consent`` (shown in the backend as
+    *[kroener.DIGITAL] Prive Consent*) is still shipped so that existing site
+    configurations referencing it under ``dependencies`` keep working. It is now
+    a no-op and entirely optional -- you may leave it or remove the dependency.
+
+    See :ref:`configuration-site-set` for details.
 
 After installing the extension, clear all caches and open
-:guilabel:`Web` > :guilabel:`Prive Consent` to add your script (see
+:guilabel:`Web` > :guilabel:`Prive` to add your script (see
 :ref:`Usage <usage>`).
