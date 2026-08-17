@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-TYPO3 CMS extension (`ok_prive_consent`) providing a backend module for managing Prive Cookie Consent banner scripts. Administrators edit JavaScript snippets in the TYPO3 backend; the scripts are stored in the `sys_template` table and rendered on the frontend via TypoScript.
+TYPO3 CMS extension (`ok_prive_consent`) providing a backend module for managing Prive Cookie Consent banner scripts. Administrators edit JavaScript snippets in the TYPO3 backend; the scripts are stored on the site root page record (`pages` table) and injected into the frontend by a PSR-14 event listener.
 
 - **TYPO3 compatibility:** 14.3 LTS (v14 line)
 - **PHP:** >= 8.2 (8.2–8.5)
@@ -25,8 +25,8 @@ Documentation can be generated via `make docs` (requires Docker).
 ### Request Flow
 
 ```
-Backend edit:    TYPO3 Backend → ConsentController (PSR-7) → sys_template table
-Frontend render: AfterCacheableContentIsGeneratedEvent → InjectBannerScript → DatabaseService → sys_template
+Backend edit:    TYPO3 Backend → ConsentController (PSR-7) → pages table (site root)
+Frontend render: AfterCacheableContentIsGeneratedEvent → InjectBannerScript → DatabaseService → pages (site root)
 ```
 
 - **`ConsentController`** (`Classes/Controller/Backend/ConsentController.php`) – PSR-7 controller with `#[AsController]` attribute. Uses `ModuleTemplateFactory` for rendering, `UriBuilder` for routing, and `PageRenderer` for JS module loading. Actions: `indexAction` (load form with no-page/no-site/edit states), `saveAction` (persist script + flush page cache).
@@ -39,7 +39,7 @@ The banner is injected by the **PHP event listener** (above), **not** by TypoScr
 
 The site set (`Configuration/Sets/OkPriveConsent/`, set name `oliverkroener/ok-prive-consent`) is now **intentionally near-empty** — `setup.typoscript` is comments only, and `config.yaml` declares the set with no dependencies. It exists solely so site configs can keep referencing the set under `dependencies:`. The banner works **even without** the set being referenced, because the listener is registered via the extension's `Services.yaml`.
 
-The banner is only rendered when the `tx_ok_prive_cookie_consent_banner_enabled` flag is set on the page's `sys_template` row.
+The banner is only rendered when the `tx_ok_prive_cookie_consent_banner_enabled` flag is set on the site root's `pages` row.
 
 ### Dependency Injection
 
@@ -58,12 +58,14 @@ Fluid template at `Resources/Private/Templates/Backend/Consent/Index.html`. Uses
 
 ### Database Fields
 
-Both custom fields live on the `sys_template` table (declared in `ext_tables.sql`; there is **no** TCA definition — the fields are read/written exclusively via QueryBuilder from the backend module):
+Both custom fields live on the `pages` table and are read/written on the **site root page** (declared in `ext_tables.sql`; there is **no** TCA definition — the fields are read/written exclusively via QueryBuilder from the backend module):
 
 - `tx_ok_prive_cookie_consent_banner_script` — the JavaScript snippet
 - `tx_ok_prive_cookie_consent_banner_enabled` — boolean toggle
 
 Note: field names retain the original `ok_prive_cookie_consent` prefix for backward compatibility with existing data.
+
+Up to v5 the fields lived on `sys_template`. Sites driven by **site sets** have no `sys_template` record at all, so the module always fell back to its "no site found" error. `MigrateConsentStorageToPagesUpgradeWizard` (`Classes/Upgrades/`, registered via the v14 `#[UpgradeWizard]` attribute from EXT:core — no EXT:install dependency) copies old `sys_template` values onto the matching site root page.
 
 ### Frontend Assets
 

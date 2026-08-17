@@ -32,7 +32,7 @@ Prive Consent
 
 TYPO3 backend module for managing `Prive Cookie Consent <https://www.prive.eu/>`__
 banner scripts. Administrators edit JavaScript snippets in the TYPO3 backend; the
-scripts are stored in the ``sys_template`` table and rendered on the frontend by a
+scripts are stored on the site root page record (``pages`` table) and rendered on the frontend by a
 PSR-14 event listener.
 
 ..  card-grid::

@@ -65,7 +65,7 @@ Brand colours: primary `#f05722`, secondary `#0fa8dd`.
 ## Architecture
 
 ```
-TYPO3 Backend --> ConsentController --> sys_template table
+TYPO3 Backend --> ConsentController --> pages table (site root)
                        |
               ModuleTemplateFactory,
               SiteFinder, ConnectionPool
@@ -73,7 +73,7 @@ TYPO3 Backend --> ConsentController --> sys_template table
 
 Frontend --> AfterCacheableContentIsGeneratedEvent
                   |
-             InjectBannerScript (listener) --> DatabaseService --> sys_template table
+             InjectBannerScript (listener) --> DatabaseService --> pages table (site root)
                   |                                  |
           inject before </body>              SiteFinder (TYPO3 core)
 ```
@@ -92,7 +92,7 @@ Frontend --> AfterCacheableContentIsGeneratedEvent
 | FormDirtyCheck | `Resources/Public/JavaScript/backend/` | ES6 module for unsaved changes detection with ConsumerScope integration |
 | Localisation | `Resources/Private/Language/` | English (`locallang.xlf`) and German (`de.locallang.xlf`) |
 
-### Database fields (on `sys_template`)
+### Database fields (on `pages`)
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -102,6 +102,18 @@ Frontend --> AfterCacheableContentIsGeneratedEvent
 The fields are declared in `ext_tables.sql` and read/written exclusively via QueryBuilder
 from the backend module (there is **no** TCA definition). Field names retain the original
 `ok_prive_cookie_consent` prefix for backward compatibility with existing data.
+
+### Upgrading from installations that stored on `sys_template`
+
+Earlier versions kept both fields on the `sys_template` record of the site root page.
+Sites configured with **site sets** have no `sys_template` record, so the module could not
+find any storage and showed *"Please select a root site or a page that contains a site root
+and template!"*. The settings now live on the site root `pages` record.
+
+After updating, run the database analyser and then the upgrade wizard
+**"EXT:ok_prive_consent: Move consent banner settings from sys_template to pages"**
+(Admin Tools → Upgrade, or `vendor/bin/typo3 upgrade:run okPriveConsentMigrateStorageToPages`)
+to copy existing values over.
 
 ### Frontend rendering order
 

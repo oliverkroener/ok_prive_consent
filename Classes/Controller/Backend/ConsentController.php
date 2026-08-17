@@ -16,6 +16,7 @@ use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Http\RedirectResponse;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Imaging\IconSize;
@@ -167,13 +168,15 @@ class ConsentController
      */
     protected function getConsentScripts(int $siteRootPid): array|false
     {
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('sys_template');
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('pages');
+        // Settings must stay reachable on a hidden or time-restricted site root.
+        $queryBuilder->getRestrictions()->removeAll()->add(new DeletedRestriction());
 
         return $queryBuilder
             ->select('tx_ok_prive_cookie_consent_banner_script', 'tx_ok_prive_cookie_consent_banner_enabled')
-            ->from('sys_template')
+            ->from('pages')
             ->where(
-                $queryBuilder->expr()->eq('pid', $queryBuilder->createNamedParameter($siteRootPid, Connection::PARAM_INT))
+                $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($siteRootPid, Connection::PARAM_INT))
             )
             ->executeQuery()
             ->fetchAssociative();
@@ -181,28 +184,15 @@ class ConsentController
 
     protected function saveConsentScript(int $siteRootPid, string $bannerScript, bool $enabled): void
     {
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('sys_template');
-
-        $record = $queryBuilder
-            ->select('uid')
-            ->from('sys_template')
-            ->where(
-                $queryBuilder->expr()->eq('pid', $queryBuilder->createNamedParameter($siteRootPid, Connection::PARAM_INT))
-            )
-            ->executeQuery()
-            ->fetchFirstColumn();
-
-        if (!empty($record[0])) {
-            $connection = $this->connectionPool->getConnectionForTable('sys_template');
-            $connection->update(
-                'sys_template',
-                [
-                    'tx_ok_prive_cookie_consent_banner_script' => $bannerScript,
-                    'tx_ok_prive_cookie_consent_banner_enabled' => (int)$enabled,
-                ],
-                ['uid' => (int)$record[0]]
-            );
-        }
+        $connection = $this->connectionPool->getConnectionForTable('pages');
+        $connection->update(
+            'pages',
+            [
+                'tx_ok_prive_cookie_consent_banner_script' => $bannerScript,
+                'tx_ok_prive_cookie_consent_banner_enabled' => (int)$enabled,
+            ],
+            ['uid' => $siteRootPid]
+        );
     }
 
     private function addFlashMessage(string $bodyKey, ContextualFeedbackSeverity $severity): void

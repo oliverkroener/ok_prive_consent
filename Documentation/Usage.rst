@@ -88,7 +88,7 @@ How it works
 
 The extension stores the consent script and an enable flag in custom fields
 (``tx_ok_prive_cookie_consent_banner_script`` and
-``tx_ok_prive_cookie_consent_banner_enabled``) on the ``sys_template`` record
+``tx_ok_prive_cookie_consent_banner_enabled``) on the ``pages`` record
 of the site root page.
 
 On frontend rendering, the PSR-14 event listener
@@ -105,11 +105,25 @@ enable flag is set, and it becomes part of the cacheable page content.
     ConsentController               |
          |                          |
          v                          v
-    DatabaseService ---- sys_template -----> InjectBannerScript (event listener)
+    DatabaseService ---- pages ----------> InjectBannerScript (event listener)
       (save/load)        (storage)           (getBannerMarkup)
                                                   |
                                                   v
                                           inject before </body>
+
+..  note::
+
+    Up to version 5.0 the fields were stored on the ``sys_template`` record of the
+    site root page. Sites configured with :ref:`site sets <t3coreapi:site-sets>`
+    have no ``sys_template`` record, which made the module report
+    *"Please select a root site or a page that contains a site root and template!"*.
+    After updating, run the database analyser and then the upgrade wizard
+    *"EXT:ok_prive_consent: Move consent banner settings from sys_template to pages"*
+    to carry existing values over:
+
+    ..  code-block:: bash
+
+        vendor/bin/typo3 upgrade:run okPriveConsentMigrateStorageToPages
 
 ..  _usage-multi-site:
 

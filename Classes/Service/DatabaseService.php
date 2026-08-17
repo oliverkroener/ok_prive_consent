@@ -7,6 +7,7 @@ namespace OliverKroener\OkPriveConsent\Service;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\SystemResource\Publishing\SystemResourcePublisherInterface;
 use TYPO3\CMS\Core\SystemResource\SystemResourceFactory;
@@ -40,12 +41,15 @@ class DatabaseService
 
         $siteRootPid = $site->getRootPageId();
 
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('sys_template');
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('pages');
+        // The banner config must be readable even if the site root itself is hidden
+        // or time-restricted — visibility of the requested page is handled by the core.
+        $queryBuilder->getRestrictions()->removeAll()->add(new DeletedRestriction());
         $scripts = $queryBuilder
             ->select('tx_ok_prive_cookie_consent_banner_script', 'tx_ok_prive_cookie_consent_banner_enabled')
-            ->from('sys_template')
+            ->from('pages')
             ->where(
-                $queryBuilder->expr()->eq('pid', $queryBuilder->createNamedParameter($siteRootPid, Connection::PARAM_INT))
+                $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($siteRootPid, Connection::PARAM_INT))
             )
             ->executeQuery()
             ->fetchAssociative();
